@@ -27,29 +27,43 @@ create table if not exists public.rsvps (
 
 create index if not exists rsvps_created_at_idx on public.rsvps (created_at desc);
 
+-- ---------- Grants (explicit, so the roles always have table privileges) ----------
+grant usage on schema public to anon, authenticated;
+grant select on public.settings to anon;
+grant insert on public.rsvps to anon, authenticated;
+grant select, insert, update, delete on public.settings to authenticated;
+grant select, delete on public.rsvps to authenticated;
+
 -- ---------- Row Level Security ----------
 alter table public.settings enable row level security;
 alter table public.rsvps enable row level security;
 
 -- Guests (anonymous) may read settings and submit RSVPs.
+drop policy if exists "settings public read" on public.settings;
 create policy "settings public read" on public.settings
   for select using (true);
 
+drop policy if exists "rsvps public insert" on public.rsvps;
 create policy "rsvps public insert" on public.rsvps
   for insert with check (true);
 
--- Administrators (authenticated) manage both.
-create policy "settings admin read" on public.settings
-  for select using (auth.role() = 'authenticated');
+-- Administrators (authenticated) manage both. "for all" covers
+-- INSERT, UPDATE and DELETE in a single policy.
+drop policy if exists "settings admin read" on public.settings;
+drop policy if exists "settings admin update" on public.settings;
+drop policy if exists "settings admin all" on public.settings;
+create policy "settings admin all" on public.settings
+  for all to authenticated
+  using (true)
+  with check (true);
 
-create policy "settings admin update" on public.settings
-  for update using (auth.role() = 'authenticated');
-
+drop policy if exists "rsvps admin read" on public.rsvps;
 create policy "rsvps admin read" on public.rsvps
-  for select using (auth.role() = 'authenticated');
+  for select to authenticated using (true);
 
+drop policy if exists "rsvps admin delete" on public.rsvps;
 create policy "rsvps admin delete" on public.rsvps
-  for delete using (auth.role() = 'authenticated');
+  for delete to authenticated using (true);
 
 -- ---------- Storage bucket for photos / video / music ----------
 insert into storage.buckets (id, name, public)

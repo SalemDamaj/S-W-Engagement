@@ -176,10 +176,10 @@
         var el = this;
         if (el) el.disabled = true;
         try {
-          var d = await saveSettings();
+          await saveSettings();
           toast("Invitation saved. Guests will see the new details instantly.");
         } catch (err) {
-          toast("Could not save: " + (err && err.message), "err");
+          toast(describeSaveError(err), "err");
         } finally {
           if (el) el.disabled = false;
         }
@@ -223,6 +223,21 @@
 
     var exportBtn = $("export-csv");
     if (exportBtn) exportBtn.addEventListener("click", exportCsv);
+  }
+
+  function describeSaveError(err) {
+    var code = err && (err.code || err.statusCode);
+    var msg = err && err.message;
+    if (code === 42501 || code === "42501" || msg && /row-level security|permission denied/i.test(msg)) {
+      return "Permission denied (403). The settings/RSVP tables are missing their admin policies. Re-run supabase/schema.sql and sign in again.";
+    }
+    if (code === "42P01" || /does not exist/i.test(msg || "")) {
+      return "Table not found. You need to run supabase/schema.sql in the Supabase SQL editor first.";
+    }
+    if (code === "PGRST301" || code === 401 || /401/i.test(String(msg))) {
+      return "Your sign-in expired. Sign out and sign in again.";
+    }
+    return "Could not save: " + (msg || "unknown error");
   }
 
   async function uploadMedia(kind, file) {
