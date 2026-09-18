@@ -33,7 +33,7 @@ body {
   overflow-x: hidden;
 }
 
-body.locked { overflow: hidden; height: 100%; position: fixed; width: 100%; }
+body.locked { overflow: hidden; }
 
 .hidden { display: none !important; }
 .show-soft { animation: softIn 1.4s var(--ease) both; }

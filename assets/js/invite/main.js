@@ -59,6 +59,11 @@
         if (mt) { mt.classList.add("is-on"); mt.classList.remove("disabled"); }
       }
       window.Invite.animations.playIntro();
+      setTimeout(function () {
+        document.body.classList.remove("locked");
+        document.body.classList.add("entered");
+        if (window.ScrollTrigger) ScrollTrigger.refresh();
+      }, 10000);
     }, { once: true });
   }
 
