@@ -68,24 +68,58 @@
   }
 
   function wireShare() {
-    var btn = $("share-btn");
-    if (!btn) return;
     var d = window.Invite.settings.get();
-    var data = {
-      title: d.settings.shareTitle || "Salem ♥ Wafaa — Our Engagement",
-      text: d.settings.shareText || "You're invited to the engagement celebration.",
-      url: location.href
-    };
-    btn.addEventListener("click", function () {
-      if (navigator.share) {
-        navigator.share(data).catch(function () {});
-      } else if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(location.href).then(function () {
-          var original = btn.textContent;
-          btn.textContent = "Link copied!";
-          setTimeout(function () { btn.textContent = original; }, 2000);
-        });
+    function shareData() {
+      var i18n = window.Invite.i18n;
+      var names = d.couple.names;
+      var text;
+      if (i18n.get() === "ar") {
+        text = i18n.t("catText").replace("{his}", d.couple.hisName).replace("{her}", d.couple.herName);
+      } else {
+        text = d.settings.shareText || ("You're invited to the engagement celebration of " + names + ".");
       }
+      return {
+        title: d.settings.shareTitle || "Salem ♥ Wafaa — Our Engagement",
+        text: text,
+        url: location.href
+      };
+    }
+    var btn = $("share-btn");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        var data = shareData();
+        if (navigator.share) {
+          navigator.share(data).catch(function () {});
+        } else if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(location.href).then(function () {
+            var original = btn.textContent;
+            btn.textContent = window.Invite.i18n.t("copied");
+            setTimeout(function () { btn.textContent = original; }, 2000);
+          });
+        }
+      });
+    }
+    var waBtn = $("wa-btn");
+    if (waBtn) {
+      waBtn.addEventListener("click", function () {
+        var data = shareData();
+        var text = data.title + "\n\n" + data.text + "\n" + data.url;
+        window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+      });
+    }
+  }
+
+  function wireLang() {
+    var toggle = $("lang-toggle");
+    if (!toggle) return;
+    toggle.addEventListener("click", function () {
+      var i18n = window.Invite.i18n;
+      i18n.set(i18n.get() === "ar" ? "en" : "ar");
+    });
+    document.addEventListener("sw:lang", function () {
+      window.Invite.animations.populate();
+      if (window.Invite.rsvp && window.Invite.rsvp.refresh) window.Invite.rsvp.refresh();
+      if (window.ScrollTrigger) ScrollTrigger.refresh();
     });
   }
 
@@ -100,6 +134,7 @@
 
   async function boot() {
     var d = await window.Invite.settings.load();
+    window.Invite.i18n.init();
     window.Invite.particles.start();
 
     window.Invite.animations.populate();
@@ -112,9 +147,11 @@
 
     window.Invite.rsvp.init();
     window.Invite.countdown.init();
+    window.Invite.calendar.init();
     wireMusic();
     wireGate();
     wireShare();
+    wireLang();
 
     window.Invite.animations.initScroll();
 

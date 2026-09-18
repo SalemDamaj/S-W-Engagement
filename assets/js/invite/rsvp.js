@@ -12,13 +12,21 @@
     return window.__supabase || null;
   }
 
+  function t(key) {
+    return window.Invite && window.Invite.i18n ? window.Invite.i18n.t(key) : key;
+  }
+
+  function guestLabel(n) {
+    return n === 1 ? t("guests1") : t("guestsN").replace("{n}", n);
+  }
+
   function setGuestsOptions(max) {
     if (!guestsSelect) return;
     guestsSelect.innerHTML = "";
     for (var i = 1; i <= max; i++) {
       var opt = document.createElement("option");
       opt.value = i;
-      opt.textContent = i === 1 ? "1 guest" : i + " guests";
+      opt.textContent = guestLabel(i);
       if (i === 2) opt.selected = true;
       guestsSelect.appendChild(opt);
     }
@@ -93,6 +101,13 @@
     if (guestsWrap) guestsWrap.classList.toggle("hidden", !value);
   }
 
+  function applySubtitle() {
+    if (!form) return;
+    var s = window.Invite.settings.get();
+    var sub = form.querySelector(".rsvp-sub");
+    if (sub) sub.textContent = s.rsvp.subtitle || t("rsvpSub");
+  }
+
   async function init() {
     var sec = document.getElementById("rsvp");
     if (!sec) return;
@@ -102,15 +117,24 @@
     form = document.getElementById("rsvp-form");
     thanks = document.getElementById("rsvp-thanks");
     if (!form) return;
-    guestsWrap = form.querySelector(".rsvp-guests");
-    guestsSelect = form.querySelector('[name="guests"]');
-    var max = (s.rsvp && s.rsvp.maxGuests) || 6;
-    if (guestsSelect) setGuestsOptions(max);
-    var sub = form.querySelector(".rsvp-sub");
-    if (sub && s.rsvp.subtitle) sub.textContent = s.rsvp.subtitle;
+    refresh();
     bind();
   }
 
+  function refresh() {
+    guestsWrap = guestsWrap || (form ? form.querySelector(".rsvp-guests") : null);
+    guestsSelect = guestsSelect || (form ? form.querySelector('[name="guests"]') : null);
+    var s = window.Invite.settings.get();
+    var max = (s.rsvp && s.rsvp.maxGuests) || 6;
+    if (guestsSelect) setGuestsOptions(max);
+    applySubtitle();
+    if (guestsWrap) guestsWrap.classList.toggle("hidden", !attending);
+    var buttons = (form && form.querySelectorAll) ? form.querySelectorAll("[data-answer]") : [];
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].classList.toggle("active", buttons[i].getAttribute("data-answer") === String(attending));
+    }
+  }
+
   window.Invite = window.Invite || {};
-  window.Invite.rsvp = { init: init };
+  window.Invite.rsvp = { init: init, refresh: refresh };
 })();

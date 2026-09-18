@@ -95,6 +95,29 @@
         </div>
 
         <div class="card">
+          <h2>Arabic text (optional)</h2>
+          <p class="hint">Fill these to translate the main message when guests switch to Arabic. Empty fields fall back to the English wording above.</p>
+          <div class="grid">
+            <div class="field full">
+              <label>Opening phrase (Arabic)</label>
+              <input name="invite_phraseAr" type="text">
+            </div>
+            <div class="field full">
+              <label>Engagement message in Arabic (one line per paragraph)</label>
+              <textarea name="invite_storyAr" rows="3"></textarea>
+            </div>
+            <div class="field full">
+              <label>Final thank-you message (Arabic)</label>
+              <textarea name="invite_thankYouAr" rows="2"></textarea>
+            </div>
+            <div class="field full">
+              <label>Event heading (Arabic)</label>
+              <input name="invite_eventTitleAr" type="text">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
           <h2>Event details</h2>
           <p class="hint">Countdown uses the target date below. Day and full-date labels generate automatically when you pick the date.</p>
           <div class="grid">
@@ -213,6 +236,21 @@
           <div style="margin-top:14px;">
             <label for="file-music" class="btn">Choose audio…</label>
             <input id="file-music" type="file" accept="audio/*" class="hidden">
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>WhatsApp / link-preview image</h2>
+          <p class="hint">Upload a wide 1200×630 photo. After uploading, force WhatsApp to re-scan the link (send the invite to yourself, or use the Facebook Sharing Debugger).</p>
+          <div class="upload-row">
+            <img id="og-preview" alt="Preview image" style="display:none;">
+            <div class="upload-info" id="upload-og-info">
+              <p class="name">No preview uploaded yet.</p>
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <label for="file-og" class="btn">Choose preview image…</label>
+            <input id="file-og" type="file" accept="image/*" class="hidden">
           </div>
         </div>
 

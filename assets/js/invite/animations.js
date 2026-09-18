@@ -28,15 +28,35 @@
     });
   }
 
+  var scrollInited = false;
+  var storyBatch = null;
+
+  function bindStoryLines() {
+    if (storyBatch) { storyBatch.forEach(function (t) { t.kill(); }); storyBatch = null; }
+    var lines = document.querySelectorAll(".msg-line");
+    if (!lines.length) return;
+    if (R) { gsap.set(lines, { autoAlpha: 1 }); return; }
+    gsap.set(lines, { autoAlpha: 0, y: 20 });
+    storyBatch = ScrollTrigger.batch(lines, {
+      start: "top 88%",
+      once: true,
+      onEnter: function (items) {
+        gsap.to(items, { autoAlpha: 1, y: 0, duration: 1.1, stagger: 0.25, ease: "power3.out", overwrite: true });
+      }
+    });
+  }
+
   function populate() {
     var d = s();
+    var L = window.Invite && window.Invite.i18n ? window.Invite.i18n.get() : "en";
+    function pick(en, ar) { return L === "ar" && ar ? ar : en; }
 
     if (document.title === "Salem ♥ Wafaa — Our Engagement") {
       document.title = d.couple.names + " — Our Engagement";
     }
 
     var phrase = document.getElementById("phrase");
-    if (phrase) phrase.textContent = d.invite.phrase;
+    if (phrase) phrase.textContent = pick(d.invite.phrase, d.invite.phraseAr);
 
     var names = document.getElementById("names");
     if (names) {
@@ -54,16 +74,13 @@
       monograms[m].appendChild(node);
     }
 
-    var engKicker = document.getElementById("eng-kicker");
-    if (engKicker) engKicker.textContent = d.invite.kicker;
-
     var sections = document.querySelectorAll("[data-eng-title]");
-    for (var i = 0; i < sections.length; i++) sections[i].textContent = d.invite.eventTitle;
+    for (var i = 0; i < sections.length; i++) sections[i].textContent = pick(d.invite.eventTitle, d.invite.eventTitleAr);
 
     var story = document.getElementById("story");
     if (story) {
       story.textContent = "";
-      var lines = String(d.invite.story || "").split("\n");
+      var lines = String(pick(d.invite.story, d.invite.storyAr) || "").split("\n");
       lines.forEach(function (line, idx) {
         var p = document.createElement("p");
         p.className = "msg-line";
@@ -71,6 +88,7 @@
         story.appendChild(p);
         void idx;
       });
+      if (scrollInited) bindStoryLines();
     }
 
     var dayLabel = document.getElementById("ev-day");
@@ -95,13 +113,10 @@
     if (mapBtn && d.event.mapUrl) mapBtn.href = d.event.mapUrl;
 
     var thank = document.getElementById("finale-message");
-    if (thank) thank.textContent = d.invite.thankYou;
+    if (thank) thank.textContent = pick(d.invite.thankYou, d.invite.thankYouAr);
 
     var finaleNames = document.getElementById("finale-names");
     if (finaleNames) finaleNames.textContent = d.couple.names;
-
-    var finaleSign = document.getElementById("finale-signoff");
-    if (finaleSign) finaleSign.textContent = d.invite.finalSignoff;
 
     var shareTitle = document.getElementById("share-title");
     if (!shareTitle && d.settings && d.settings.shareTitle) {
@@ -127,9 +142,10 @@
     if (phMonogram) phMonogram.textContent = d.couple.monogram;
 
     if (videoUrl && video) {
+      var sameVideo = video.getAttribute("src") === videoUrl;
       video.style.display = "block";
       video.poster = photoUrl || "";
-      video.src = videoUrl;
+      if (!sameVideo) video.setAttribute("src", videoUrl);
       video.muted = true;
       video.playsInline = true;
       video.loop = true;
@@ -139,8 +155,10 @@
         var p = video.play();
         if (p && p.catch) p.catch(function () {});
       };
-      tryPlay();
-      video.addEventListener("loadeddata", tryPlay);
+      if (!sameVideo) {
+        tryPlay();
+        video.addEventListener("loadeddata", tryPlay);
+      }
       document.addEventListener("touchstart", function once() {
         tryPlay();
         document.removeEventListener("touchstart", once);
@@ -149,11 +167,14 @@
     }
 
     if (photoUrl && img) {
+      var samePhoto = img.getAttribute("src") === photoUrl;
       img.style.display = "block";
       img.alt = d.media.photoAlt || d.couple.names || "";
-      img.src = photoUrl;
-      img.onload = function () { if (ph) ph.style.display = "none"; };
-      img.onerror = function () { if (ph) ph.style.display = "flex"; };
+      if (!samePhoto) {
+        img.setAttribute("src", photoUrl);
+        img.onload = function () { if (ph) ph.style.display = "none"; };
+        img.onerror = function () { if (ph) ph.style.display = "flex"; };
+      }
       if (ph) ph.style.display = "none";
     } else if (ph) {
       ph.style.display = "flex";
@@ -301,16 +322,8 @@
       gsap.set(reveals, { autoAlpha: 1 });
     }
 
-    var storyLines = document.querySelectorAll(".msg-line");
-    if (storyLines.length && !R) {
-      ScrollTrigger.batch(storyLines, {
-        start: "top 88%",
-        once: true,
-        onEnter: function (items) {
-          gsap.to(items, { autoAlpha: 1, y: 0, duration: 1.1, stagger: 0.25, ease: "power3.out", overwrite: true });
-        }
-      });
-    }
+    scrollInited = true;
+    bindStoryLines();
 
     ["message", "countdown", "rsvp", "finale"].forEach(function (id) {
       var el = root[id];

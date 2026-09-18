@@ -99,8 +99,8 @@ Open `https://your-link/admin.html`, sign in with the admin account.
 
 | Tab | What you can change |
 |---|---|
-| **Invitation** | Couple names, opening phrase & message, event title, date, time, venue, location, map link, countdown target, RSVP on/off, max guests, music/countdown toggles, share texts |
-| **Photos & Music** | Upload the couple photo, an optional highlight video (MP4/WebM), background music, or paste hosted URLs |
+| **Invitation** | Couple names, opening phrase & message, event title, date, time, venue, location, map link, countdown target, RSVP on/off, max guests, music/countdown toggles, share texts, **optional Arabic versions** of the main texts |
+| **Photos & Music** | Upload the couple photo, an optional highlight video (MP4/WebM), background music, the WhatsApp preview image (1200×630), or paste hosted URLs |
 | **Guest list** | Live RSVP replies with summary stats, delete entries, **Export CSV** |
 
 Changes save instantly — guests see updated details as soon as they reload the link.
@@ -110,15 +110,15 @@ Changes save instantly — guests see updated details as soon as they reload the
 ## 6. The experience (what's built)
 
 1. **Preloader** — monogram + elegant progress shimmer
-2. **Gate** — "Open Invitation" screen (also unlocks audio, required by mobile browsers)
+2. **Gate** — "Open Invitation" screen (also unlocks audio, required by mobile browsers); a **language toggle** (EN / عربي) is always available at the top-left and switches the whole invite, including RTL layout
 3. **Intro** — *"Two hearts, one beautiful story…"* fades in
 4. **Names** — "Salem ♥ Wafaa" writes in letter-by-letter, heart glows, flourish underline draws, then **OUR ENGAGEMENT**
 5. **Photo / video** — cinematic zoom-in + light-leak on scroll; video loops if provided
 6. **Message** — the invitation story, line by line
-7. **Event details** — date, time, venue, location cards + **View Location** (opens Google/Apple Maps)
+7. **Event details** — date, time, venue, location cards + **View Location** (opens Google/Apple Maps) + **Add to Calendar** (Google Calendar or an .ics download for Apple/others)
 8. **Countdown** — DAYS : HOURS : MINUTES : SECONDS → *"Today is the day! ❤️"* when it hits zero
 9. **RSVP** — name, guests, Yes/No, optional message
-10. **Finale** — thank-you, names, share button
+10. **Finale** — thank-you, names, **Share** + **WhatsApp** buttons
 
 Background: floating golden particles, soft light rays, ambient sound (a built-in dreamy
 pad, or your own music file). All motion respects `prefers-reduced-motion`, pauses when the
@@ -135,6 +135,8 @@ tab is hidden, and is tuned for smooth performance on normal phones.
   `https://www.google.com/maps/search/?api=1&query=Rosewood+Hotel+Riyadh`
   The button opens Google Maps on Android/desktop and Apple Maps when the phone prefers it.
 - **Date labels** — edit them in the admin panel, or just pick the date and the "Day" and "Full date" labels auto-generate.
+- **Language** — guests toggle EN/عربي top-left (remembered per device). Translate the main words in admin under *Arabic text*. The interface (buttons, labels, countdown, RSVP) is fully translated; the couple's names stay in Latin script.
+- **WhatsApp link preview** — upload a wide 1200×630 photo under *Photos & Music → WhatsApp / link-preview image*. It saves at a fixed URL so the link card shows your photo. WhatsApp caches previews, so after uploading send the link to yourself (or use the [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)) to refresh it.
 
 ---
 
@@ -178,10 +180,12 @@ assets/
       supabase.min.js     Supabase JS client (bundled — no CDN needed at runtime)
     invite/
       settings.js         Loads settings from Supabase → merges with defaults
+      i18n.js             English / Arabic dictionary + language switching (RTL)
       audio.js            Music: your file OR a built-in Web Audio ambient pad
       particles.js        Golden dust canvas FX
       countdown.js        Countdown engine
       rsvp.js             RSVP form + Supabase insert
+      calendar.js         Add-to-Calendar (Google Calendar + .ics download)
       animations.js       Intro timeline + scroll animations (GSAP)
       main.js             Boot / orchestration
     admin/

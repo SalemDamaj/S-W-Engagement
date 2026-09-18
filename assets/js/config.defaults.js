@@ -11,7 +11,11 @@ window.INVITE_DEFAULTS = {
     story: "Together with our families,\nwe invite you to celebrate\nthe beginning of our next chapter.",
     eventTitle: "ENGAGEMENT CELEBRATION",
     thankYou: "Your presence will make our celebration even more special.",
-    finalSignoff: "With love,"
+    finalSignoff: "With love,",
+    phraseAr: "",
+    storyAr: "",
+    eventTitleAr: "",
+    thankYouAr: ""
   },
   event: {
     date: "2027-01-15",

@@ -68,7 +68,11 @@
         story: v("invite_story"),
         eventTitle: v("invite_eventTitle"),
         thankYou: v("invite_thankYou"),
-        finalSignoff: v("invite_finalSignoff")
+        finalSignoff: v("invite_finalSignoff"),
+        phraseAr: v("invite_phraseAr"),
+        storyAr: v("invite_storyAr"),
+        eventTitleAr: v("invite_eventTitleAr"),
+        thankYouAr: v("invite_thankYouAr")
       },
       event: {
         date: v("event_date"),
@@ -112,6 +116,10 @@
     set("invite_eventTitle", data.invite.eventTitle);
     set("invite_thankYou", data.invite.thankYou);
     set("invite_finalSignoff", data.invite.finalSignoff);
+    set("invite_phraseAr", data.invite.phraseAr);
+    set("invite_storyAr", data.invite.storyAr);
+    set("invite_eventTitleAr", data.invite.eventTitleAr);
+    set("invite_thankYouAr", data.invite.thankYouAr);
     set("event_date", data.event.date);
     set("event_dayLabel", data.event.dayLabel);
     set("event_dateLabel", data.event.dateLabel);
@@ -192,7 +200,7 @@
     var dateInput = document.querySelector('[name="event_date"]');
     if (dateInput) dateInput.addEventListener("change", autoDateLabel);
 
-    ["photo", "video", "music"].forEach(function (kind) {
+    ["photo", "video", "music", "og"].forEach(function (kind) {
       var input = $("file-" + kind);
       if (input) input.addEventListener("change", function () {
         var f = input.files && input.files[0];
@@ -240,7 +248,54 @@
     return "Could not save: " + (msg || "unknown error");
   }
 
+  function toJpeg(file) {
+    return new Promise(function (resolve) {
+      if (!/^image\/(png|webp|bmp|gif)$/i.test(file.type)) { resolve(file); return; }
+      var img = new Image();
+      img.onload = function () {
+        var canvas = document.createElement("canvas");
+        var target = 1200;
+        var ratio = (img.naturalWidth || target) / target;
+        var w = target;
+        var h = Math.round((img.naturalHeight || target) / ratio);
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(function (blob) { resolve(blob || file); }, "image/jpeg", 0.85);
+      };
+      img.onerror = function () { resolve(file); };
+      var reader = new FileReader();
+      reader.onload = function (e) { img.src = e.target.result; };
+      reader.readAsDataURL(file);
+    });
+  }
+
   async function uploadMedia(kind, file) {
+    var infoId = "upload-" + kind + "-info";
+    var info = $(infoId);
+    var bits = (file.size / (1024 * 1024)).toFixed(2);
+
+    if (kind === "og") {
+      var jpeg = await toJpeg(file);
+      var path = "og/preview.jpg";
+      var up = await sb.storage.from("invite-media").upload(path, jpeg, { upsert: true, cacheControl: "3600", contentType: "image/jpeg" });
+      if (up.error) {
+        toast("Upload failed: " + up.error.message, "err");
+        return;
+      }
+      var pub = sb.storage.from("invite-media").getPublicUrl(path);
+      var url = pub.data && pub.data.publicUrl;
+      var prev = $("og-preview");
+      if (prev) { prev.src = url; prev.style.display = "block"; }
+      if (info) info.innerHTML = '<p class="name">' + esc(file.name) + " (" + bits + " MB)</p>" +
+        '<p class="url">' + esc(url) + "</p>";
+      toast("Preview image uploaded. WhatsApp will refresh after it re-scans the link.");
+      return;
+    }
+
     var ext = (file.name.split(".").pop() || "bin").toLowerCase();
     var ts = Date.now();
     var path = ("couple/" + kind + "-" + ts + "." + ext).toLowerCase();
@@ -262,10 +317,7 @@
       var prev = $("photo-preview");
       if (prev) { prev.src = url; prev.style.display = "block"; }
     }
-    var infoId = "upload-" + kind + "-info";
-    var info = $(infoId);
     if (info) {
-      var bits = (file.size / (1024 * 1024)).toFixed(2);
       info.innerHTML = '<p class="name">' + esc(file.name) + " (" + bits + " MB)</p>" +
         '<p class="url">' + esc(url) + "</p>";
     }
@@ -354,6 +406,13 @@
     } catch (e) { /* default */ }
     var photoPrev = $("photo-preview");
     if (photoPrev) { photoPrev.src = s.media.photo || ""; photoPrev.style.display = s.media.photo ? "block" : "none"; }
+    var ogPrev = $("og-preview");
+    if (ogPrev) {
+      var ogUrl = client.storage.from("invite-media").getPublicUrl("og/preview.jpg");
+      var url = ogUrl.data && ogUrl.data.publicUrl;
+      if (url) ogPrev.src = url;
+      ogPrev.style.display = url ? "block" : "none";
+    }
   }
 
   async function initApp() {
