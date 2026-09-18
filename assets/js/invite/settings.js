@@ -45,18 +45,17 @@
 
   var S = null;
 
-  async function getSupabase() {
+  function getSupabase() {
     if (!isConfigured()) return null;
     if (window.__supabase) return window.__supabase;
-    var libUrl = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-    var mod = await import(libUrl);
-    var client = mod.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.anonKey);
+    if (!window.supabase || !window.supabase.createClient) return null;
+    var client = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.anonKey);
     window.__supabase = client;
     return client;
   }
 
   async function loadRemote() {
-    var client = await getSupabase();
+    var client = getSupabase();
     if (!client) return null;
     var res = await client.from("settings").select("data").eq("id", 1).maybeSingle();
     if (res.error) {

@@ -10,13 +10,14 @@
   function get() {
     if (client) return Promise.resolve(client);
     if (!isConfigured()) return Promise.resolve(null);
-    return import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2").then(function (mod) {
-      client = mod.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.anonKey);
-      return client;
-    }).catch(function (err) {
-      console.error("Supabase client failed to load:", err);
-      return null;
-    });
+    if (!window.supabase || !window.supabase.createClient) return Promise.resolve(null);
+    try {
+      client = window.supabase.createClient(window.SUPABASE_CONFIG.url, window.SUPABASE_CONFIG.anonKey);
+    } catch (err) {
+      console.error("Supabase client failed to initialize:", err);
+      client = null;
+    }
+    return Promise.resolve(client);
   }
 
   window.InviteSupabase = { get: get, isConfigured: isConfigured };

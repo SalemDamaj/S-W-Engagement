@@ -364,6 +364,15 @@
       $("login-view").classList.remove("hidden");
       var warn = $("config-warning");
       if (warn) warn.classList.remove("hidden");
+      var configured = !!window.SUPABASE_CONFIG && !!window.SUPABASE_CONFIG.url && !!window.SUPABASE_CONFIG.anonKey;
+      if (!configured) {
+        warn.innerHTML = "Supabase is not configured yet. Add your project URL and anon key to " +
+          "<code>supabase/config.js</code>, then reload this page.";
+      } else if (!window.supabase || !window.supabase.createClient) {
+        warn.innerHTML = "The Supabase library failed to load.<br>Check that <code>assets/js/vendor/supabase.min.js</code> exists, then hard refresh (Ctrl+Shift+R).";
+      } else {
+        warn.innerHTML = "Could not connect to Supabase with the keys in <code>supabase/config.js</code>.<br>Check the project URL and the full anon key, then hard refresh (Ctrl+Shift+R).";
+      }
       return;
     }
     wire();

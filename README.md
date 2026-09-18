@@ -172,7 +172,10 @@ assets/
     admin.css             Admin panel styling
   js/
     config.defaults.js    Default content (offline fallback + admin base)
-    vendor/               GSAP + ScrollTrigger (pinned versions, bundled)
+    vendor/
+      gsap.min.js         GSAP animation library (bundled)
+      ScrollTrigger.min.js
+      supabase.min.js     Supabase JS client (bundled — no CDN needed at runtime)
     invite/
       settings.js         Loads settings from Supabase → merges with defaults
       audio.js            Music: your file OR a built-in Web Audio ambient pad
