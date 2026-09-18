@@ -221,6 +221,7 @@
     }
 
     tl.call(function () {
+      document.body.classList.remove("locked");
       document.body.classList.add("entered");
       if (window.ScrollTrigger) ScrollTrigger.refresh();
     });
