@@ -1,4 +1,4 @@
 window.SUPABASE_CONFIG = {
-  url: "https://supabase.com/dashboard/project/jzpcswbxiivnemfubmgy/settings/api-keys",
+  url: "https://jzpcswbxiivnemfubmgy.supabase.co",
   anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6cGNzd2J4aWl2bmVtZnVibWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MjQ2NzUsImV4cCI6MjEwNTMwMDY3NX0.I_BsSnKuGF4aa6regAaXMgMFJB1oJaSDgOcDqe3T7PU"
 };
