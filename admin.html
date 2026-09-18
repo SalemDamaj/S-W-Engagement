@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Invitation Admin — Salem ♥ Wafaa</title>
+  <link rel="stylesheet" href="assets/css/admin.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext x='16' y='22' font-size='14' text-anchor='middle' fill='%23a97f2f' font-family='serif'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+  <div class="toast-zone" id="toast-zone"></div>
+
+  <div class="login-wrap" id="login-view">
+    <div class="login-card">
+      <div class="alert warn hidden" id="config-warning">
+        Supabase is not configured yet. Add your project URL and anon key to
+        <code>supabase/config.js</code>, then reload this page.
+      </div>
+      <h1>Sign in to manage</h1>
+      <p class="sub">Use the admin account you created in Supabase Auth.</p>
+      <form id="login-form">
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input id="login-email" name="email" type="email" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input id="login-password" name="password" type="password" required autocomplete="current-password">
+        </div>
+        <div style="margin-top:18px;">
+          <button type="submit" class="btn primary" style="width:100%; padding:12px;">Sign in</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="app-view" class="hidden">
+
+    <header class="app-top">
+      <div class="brand">
+        <h1>Invitation Studio</h1>
+        <span>Salem ♥ Wafaa · Engagement</span>
+      </div>
+      <div class="top-right">
+        <a href="index.html" style="color:#e7cf96;">Open invitation &#8599;</a>
+        <button id="logout-btn" type="button" class="btn ghost">Sign out</button>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button id="tab-invitation" class="tab active" type="button">Invitation</button>
+      <button id="tab-media" class="tab" type="button">Photos &amp; Music</button>
+      <button id="tab-guests" class="tab" type="button">Guest list</button>
+    </nav>
+
+    <main class="app-main">
+
+      <section id="pane-invitation">
+
+        <div class="card">
+          <h2>Couple &amp; invitation text</h2>
+          <p class="hint">These fill the hero, story and closing screens.</p>
+          <div class="grid">
+            <div class="field">
+              <label>His name</label>
+              <input name="couple_his" type="text">
+            </div>
+            <div class="field">
+              <label>Her name</label>
+              <input name="couple_her" type="text">
+            </div>
+            <div class="field full">
+              <label>Opening phrase</label>
+              <input name="invite_phrase" type="text">
+            </div>
+            <div class="field full">
+              <label>Kicker under the names</label>
+              <input name="invite_kicker" type="text">
+            </div>
+            <div class="field full">
+              <label>Engagement message (one line per paragraph)</label>
+              <textarea name="invite_story" rows="3"></textarea>
+            </div>
+            <div class="field full">
+              <label>Final thank-you message</label>
+              <textarea name="invite_thankYou" rows="2"></textarea>
+            </div>
+            <div class="field full">
+              <label>Sign-off before the final names</label>
+              <input name="invite_finalSignoff" type="text">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Event details</h2>
+          <p class="hint">Countdown uses the target date below. Day and full-date labels generate automatically when you pick the date.</p>
+          <div class="grid">
+            <div class="field">
+              <label>Engagement date</label>
+              <input name="event_date" type="date">
+            </div>
+            <div class="field">
+              <label>Countdown target (date &amp; time)</label>
+              <input name="event_countdownTarget" type="datetime-local">
+            </div>
+            <div class="field">
+              <label>Day label (e.g. FRIDAY)</label>
+              <input name="event_dayLabel" type="text">
+            </div>
+            <div class="field">
+              <label>Full date label (e.g. FRIDAY, JANUARY 15, 2027)</label>
+              <input name="event_dateLabel" type="text">
+            </div>
+            <div class="field">
+              <label>Time</label>
+              <input name="event_time" type="text" placeholder="6:00 PM">
+            </div>
+            <div class="field">
+              <label>Venue</label>
+              <input name="event_venue" type="text" placeholder="The Grand Ballroom">
+            </div>
+            <div class="field">
+              <label>Location</label>
+              <input name="event_location" type="text" placeholder="Rosewood Hotel, Riyadh">
+            </div>
+            <div class="field">
+              <label>Map link (Google or Apple Maps URL)</label>
+              <input name="event_mapUrl" type="url" placeholder="https://maps.google.com/?q=...">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Behaviour</h2>
+          <p class="hint">Which parts of the experience are active.</p>
+          <div class="grid">
+            <div class="field">
+              <label>RSVP</label>
+              <div class="checkline"><input id="rsvp_enabled" name="rsvp_enabled" type="checkbox"><span>Enabled</span></div>
+            </div>
+            <div class="field">
+              <label>Countdown</label>
+              <div class="checkline"><input id="st_countdownEnabled" name="st_countdownEnabled" type="checkbox"><span>Enabled</span></div>
+            </div>
+            <div class="field">
+              <label>Background music</label>
+              <div class="checkline"><input id="st_musicEnabled" name="st_musicEnabled" type="checkbox"><span>Enabled</span></div>
+            </div>
+            <div class="field">
+              <label>Max guests per reply</label>
+              <input name="rsvp_maxGuests" type="number" min="1" max="50">
+            </div>
+            <div class="field full">
+              <label>RSVP subtitle (e.g. deadline)</label>
+              <input name="rsvp_subtitle" type="text" placeholder="Kindly respond by January 1st, 2027">
+            </div>
+            <div class="field full">
+              <label>Share title (used by the phone share sheet)</label>
+              <input name="st_shareTitle" type="text">
+            </div>
+            <div class="field full">
+              <label>Share text</label>
+              <input name="st_shareText" type="text">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button id="save-settings" type="button" class="btn primary">Save invitation</button>
+        </div>
+
+      </section>
+
+      <section id="pane-media" class="hidden">
+
+        <div class="card">
+          <h2>Couple photo</h2>
+          <p class="hint">A portrait works best (3:4). Guests see it with a cinematic zoom.</p>
+          <div class="upload-row">
+            <img id="photo-preview" alt="Photo preview" style="display:none;">
+            <div class="upload-info" id="upload-photo-info">
+              <p class="name">No photo uploaded yet.</p>
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <label for="file-photo" class="btn">Choose photo…</label>
+            <input id="file-photo" type="file" accept="image/*" class="hidden">
+          </div>
+          <div class="progress-bar" style="display:none;"><i></i></div>
+        </div>
+
+        <div class="card">
+          <h2>Couple video (optional)</h2>
+          <p class="hint">Short MP4 or WebM. If provided, it replaces the photo and loops muted.</p>
+          <div class="upload-info" id="upload-video-info">
+            <p class="name">No video uploaded yet.</p>
+          </div>
+          <div style="margin-top:14px;">
+            <label for="file-video" class="btn">Choose video…</label>
+            <input id="file-video" type="file" accept="video/*" class="hidden">
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Background music (optional)</h2>
+          <p class="hint">Any MP3/audio URL works. Leave empty to use the built-in ambient sound using your phone's speakers.</p>
+          <div class="upload-info" id="upload-music-info">
+            <p class="name">No music uploaded yet.</p>
+          </div>
+          <div style="margin-top:14px;">
+            <label for="file-music" class="btn">Choose audio…</label>
+            <input id="file-music" type="file" accept="audio/*" class="hidden">
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Direct URLs</h2>
+          <p class="hint">You can paste hosted URLs instead of uploading.</p>
+          <div class="grid">
+            <div class="field full">
+              <label>Photo URL</label>
+              <input name="media_photo" type="url" placeholder="https://.../photo.jpg">
+            </div>
+            <div class="field full">
+              <label>Video URL (MP4 / WebM)</label>
+              <input name="media_videoUrl" type="url" placeholder="https://.../clip.mp4">
+            </div>
+            <div class="field full">
+              <label>Music URL</label>
+              <input name="media_musicUrl" type="url" placeholder="https://.../track.mp3">
+            </div>
+          </div>
+          <div class="form-actions" style="margin-top:14px;">
+            <button id="save-settings-media" type="button" class="btn primary">Save invitation</button>
+          </div>
+        </div>
+
+      </section>
+
+      <section id="pane-guests" class="hidden">
+
+        <div class="stat-row">
+          <div class="stat"><b id="stat-total">0</b><span>Replies</span></div>
+          <div class="stat"><b id="stat-accepts">0</b><span>Accepting</span></div>
+          <div class="stat"><b id="stat-declines">0</b><span>Declining</span></div>
+          <div class="stat"><b id="stat-guests">0</b><span>Total guests</span></div>
+        </div>
+
+        <div class="card">
+          <div class="table-tools">
+            <h2 style="margin:0; font-size:0.95rem;">Guest list</h2>
+            <button id="export-csv" type="button" class="btn">Export CSV</button>
+          </div>
+          <p class="hint hidden" id="guests-empty">No RSVPs yet. Share the invitation link on WhatsApp to collect replies.</p>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Guests</th>
+                  <th>Attendance</th>
+                  <th>Message</th>
+                  <th>Submitted</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="guests-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script src="assets/js/config.defaults.js"></script>
+  <script src="supabase/config.js"></script>
+  <script src="assets/js/admin/supabase.js"></script>
+  <script src="assets/js/admin/admin.js"></script>
+</body>
+</html>

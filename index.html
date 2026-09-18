@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0f0f0c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="You're invited to the engagement celebration of Salem & Wafaa.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Salem ♥ Wafaa — Our Engagement">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext x='16' y='22' font-size='18' text-anchor='middle' fill='%23e7cf96' font-family='serif'%3E%26%238529;%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="assets/css/invitation.css">
+</head>
+<body class="locked">
+
+  <div id="rays"></div>
+  <canvas id="fx"></canvas>
+
+  <div id="preloader" aria-hidden="true">
+    <div class="pl-monogram" data-load-monogram>S&nbsp;♥&nbsp;W</div>
+    <div class="pl-track"><div class="pl-fill"></div></div>
+    <p class="pl-note">Preparing your invitation</p>
+  </div>
+
+  <button id="music-toggle" type="button" aria-label="Toggle music" aria-pressed="false">
+    <span class="eq"><i></i><i></i><i></i></span>
+    <span class="music-label">Music</span>
+  </button>
+
+  <div id="gate" role="dialog" aria-modal="true" aria-label="Open invitation">
+    <p class="gate-kicker" data-load-kicker>A private celebration</p>
+    <div class="gate-monogram" data-load-monogram>S&nbsp;♥&nbsp;W</div>
+    <p class="gate-names" id="gate-names">Salem &amp; Wafaa</p>
+    <h1 class="gate-title">You're Invited</h1>
+    <div class="gate-divider"></div>
+    <button id="open-btn" type="button">Open Invitation</button>
+    <p class="gate-note">For the best experience, turn your sound on</p>
+  </div>
+
+  <main id="invite">
+
+    <section id="intro" class="panel">
+      <div class="intro-content">
+        <p id="phrase"></p>
+        <div id="names-block">
+          <h2 id="names"></h2>
+          <svg class="underline" viewBox="0 0 340 46" aria-hidden="true">
+            <path id="underline" pathLength="1"
+              d="M20 30 C 90 22, 160 34, 230 30 S 308 22, 318 28
+                 C 322 31, 328 38, 336 33" />
+          </svg>
+          <p id="our-eng">Our Engagement</p>
+        </div>
+      </div>
+      <div id="scroll-cue">
+        <span>Swipe to begin</span>
+        <span class="cue-arrow"></span>
+      </div>
+    </section>
+
+    <section id="photo" class="panel panel-charcoal">
+      <div class="panel-inner">
+        <p class="kicker" data-eng-title>Engagement Celebration</p>
+        <div class="media-frame" data-reveal>
+          <div class="photo-deco" id="photo-deco"></div>
+          <img id="media-img" alt="">
+          <video id="media-video" muted loop playsinline preload="metadata"></video>
+          <div id="media-ph">
+            <span id="media-ph-monogram">S ♥ W</span>
+            <span id="media-ph-note">Photo coming soon</span>
+          </div>
+          <div class="media-vignette"></div>
+          <div id="media-veil"></div>
+        </div>
+        <p id="media-caption">Salem ♥ Wafaa</p>
+      </div>
+    </section>
+
+    <section id="message" class="panel panel-ivory">
+      <div class="panel-inner">
+        <p class="msg-ornament">❦</p>
+        <div id="story" data-reveal></div>
+        <div class="divider-lux"></div>
+      </div>
+    </section>
+
+    <section id="details" class="panel panel-charcoal">
+      <div class="panel-inner">
+        <p class="kicker" data-eng-title>Engagement Celebration</p>
+        <h3 class="title" data-reveal data-eng-title>Engagement Celebration</h3>
+        <p class="subtitle" data-reveal>We would be honored by your presence</p>
+
+        <div class="detail-grid">
+          <div class="detail-card" data-reveal>
+            <div class="detail-icon">&#128197;</div>
+            <div class="detail-body">
+              <p class="detail-label">Date</p>
+              <p class="detail-value" id="ev-day"></p>
+              <p class="detail-value" id="ev-date"></p>
+            </div>
+          </div>
+          <div class="detail-card" data-reveal>
+            <div class="detail-icon">&#128338;</div>
+            <div class="detail-body">
+              <p class="detail-label">Time</p>
+              <p class="detail-value" id="ev-time"></p>
+            </div>
+          </div>
+          <div class="detail-card" data-reveal>
+            <div class="detail-icon">&#128205;</div>
+            <div class="detail-body">
+              <p class="detail-label">Venue</p>
+              <p class="detail-value" id="ev-venue"></p>
+              <p class="detail-label" style="margin-top:12px;">Location</p>
+              <p class="detail-value" id="ev-location"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-row" data-reveal data-reveal-soft>
+          <a id="map-btn" target="_blank" rel="noopener">View Location&nbsp;&nbsp;&#8599;</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="countdown" class="panel panel-ivory">
+      <div class="panel-inner">
+        <p class="kicker" style="color:#8d6b2f;">Countdown</p>
+        <h3 class="title" data-reveal style="color:#4a3a1b;">Counting the moments</h3>
+        <div id="countdown-wrap">
+          <div class="countdown-grid">
+            <div class="cd-cell" data-unit="days">
+              <span class="cd-num" data-digit="0">0</span><span class="cd-num" data-digit="1">0</span>
+              <p class="cd-label">Days</p>
+            </div>
+            <div class="cd-cell" data-unit="hours">
+              <span class="cd-num" data-digit="0">0</span><span class="cd-num" data-digit="1">0</span>
+              <p class="cd-label">Hours</p>
+            </div>
+            <div class="cd-cell" data-unit="minutes">
+              <span class="cd-num" data-digit="0">0</span><span class="cd-num" data-digit="1">0</span>
+              <p class="cd-label">Minutes</p>
+            </div>
+            <div class="cd-cell" data-unit="seconds">
+              <span class="cd-num" data-digit="0">0</span><span class="cd-num" data-digit="1">0</span>
+              <p class="cd-label">Seconds</p>
+            </div>
+          </div>
+          <p class="cd-message">Until our special day</p>
+          <p class="cd-done hidden">Today is the day! &hearts;</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="rsvp" class="panel panel-charcoal">
+      <div class="panel-inner">
+        <p class="kicker">RSVP</p>
+        <h3 class="title" data-reveal>Will you join us?</h3>
+        <p class="subtitle" data-reveal>Your reply will mean the world to us</p>
+        <div id="rsvp-card" data-reveal>
+          <form id="rsvp-form" novalidate>
+            <div class="rsvp-head">
+              <p class="h">Kindly respond</p>
+              <p class="rsvp-sub rsvp-settings-sub"></p>
+            </div>
+            <div class="field">
+              <input class="rsvp-input" name="name" type="text" placeholder="Your full name" required autocomplete="name">
+            </div>
+            <div class="attending-row">
+              <span class="att-row-label">Will you attend?</span>
+              <button type="button" class="att-btn active" data-answer="true">Joyfully Accepts</button>
+              <button type="button" class="att-btn" data-answer="false">Regretfully Declines</button>
+            </div>
+            <div class="rsvp-guests field">
+              <span class="label-inline">Number of guests</span>
+              <select class="rsvp-select" name="guests"></select>
+            </div>
+            <div class="field" style="margin-top:16px;">
+              <textarea class="rsvp-textarea" name="message" rows="3" placeholder="A message for the couple (optional)"></textarea>
+            </div>
+            <button type="submit" class="gold-btn">Send RSVP</button>
+          </form>
+          <div id="rsvp-thanks" class="hidden">
+            <p class="h">Thank you!</p>
+            <p>Your response has been received. We can't wait to celebrate with you.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="finale" class="panel">
+      <div class="panel-inner">
+        <p id="finale-message" data-reveal>Your presence will make our celebration even more special.</p>
+        <div class="finale-divider" data-reveal></div>
+        <p class="finale-signoff" id="finale-signoff" data-reveal>With love,</p>
+        <h3 id="finale-names" data-reveal>Salem ♥ Wafaa</h3>
+        <button id="share-btn" type="button" data-reveal>＋ &nbsp;Share</button>
+      </div>
+      <p class="finale-foot">Made with love · Sal</p>
+    </section>
+
+  </main>
+
+  <script src="assets/js/config.defaults.js"></script>
+  <script src="supabase/config.js"></script>
+  <script src="assets/js/vendor/gsap.min.js"></script>
+  <script src="assets/js/vendor/ScrollTrigger.min.js"></script>
+  <script src="assets/js/invite/settings.js"></script>
+  <script src="assets/js/invite/particles.js"></script>
+  <script src="assets/js/invite/audio.js"></script>
+  <script src="assets/js/invite/countdown.js"></script>
+  <script src="assets/js/invite/rsvp.js"></script>
+  <script src="assets/js/invite/animations.js"></script>
+  <script src="assets/js/invite/main.js"></script>
+</body>
+</html>
