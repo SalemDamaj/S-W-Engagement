@@ -24,7 +24,10 @@
       document.fonts.load('140px "Great Vibes"'),
       document.fonts.load('italic 400 110px "Cormorant Garamond"'),
       document.fonts.load('400 30px Montserrat'),
-      document.fonts.load('300 30px Montserrat')
+      document.fonts.load('300 30px Montserrat'),
+      document.fonts.load('400 60px Cairo'),
+      document.fonts.load('700 60px Cairo'),
+      document.fonts.load('italic 400 40px "Noto Naskh Arabic"')
     ];
     fontsReady = Promise.all(loads).catch(function () {});
     return fontsReady;
@@ -98,6 +101,41 @@
     ctx.font = weight + " " + s + "px " + face;
     spaced(ctx, text, cx, y, weight, s, face, spacing, color, shadow);
     return s;
+  }
+
+  /* Arabic text is drawn as a WHOLE string (never per-glyph — the letters join
+     into ligature forms, so per-glyph spacing would break shaping) and right
+     to left. These helpers rely on the working font (from ensureFonts) carrying
+     Arabic glyphs and on canvas handling of RTL direction + bi-directional runs. */
+  function arFit(ctx, text, cx, y, maxW, start, min, weight, face, color, shadow) {
+    weight = weight || "";
+    var s = Math.max(min, start);
+    ctx.font = weight + " " + s + "px " + face;
+    while (s > min && ctx.measureText(text).width > maxW) {
+      s -= 4;
+      ctx.font = weight + " " + s + "px " + face;
+    }
+    ctx.font = weight + " " + s + "px " + face;
+    ctx.save();
+    ctx.direction = "rtl";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
+    if (shadow) { ctx.shadowColor = shadow; ctx.shadowBlur = 26; }
+    ctx.fillText(text, cx, y);
+    ctx.restore();
+    return s;
+  }
+
+  function arText(ctx, text, cx, y, weight, size, face, color, shadow) {
+    ctx.save();
+    ctx.direction = "rtl";
+    ctx.font = weight + " " + size + "px " + face;
+    ctx.fillStyle = color;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "alphabetic";
+    if (shadow) { ctx.shadowColor = shadow; ctx.shadowBlur = 26; }
+    ctx.fillText(text, cx, y);
+    ctx.restore();
   }
 
   function formatDate(iso) {
@@ -186,10 +224,14 @@
   }
 
   function drawContent(ctx, W, H, p, C) {
-    var cx = W / 2;
-    var text = p.text;
-    var accent = p.accent;
-    var muted = p.muted;
+      var cx = W / 2;
+      var text = p.text;
+      var accent = p.accent;
+      var muted = p.muted;
+
+      if (C.rtl) { drawContentAr(ctx, W, H, p, C); return; }
+
+      /* Rest of drawContent (English, per-glyph) follows unchanged. */
     ctx.textAlign = "center";
     ctx.textBaseline = "alphabetic";
 
@@ -286,11 +328,41 @@
       return c;
     }
 
+    var lang = (opts && opts.lang) || "en";
+    var useAr = lang === "ar";
+
+    /* Arabic caption source chain, per field:
+         custom.<key>Ar  →  invite.<keyAr>  →  the English pick below. */
+    function pickAr(key, keyAr, enFallback) {
+      var v = pick(key + "Ar", "");
+      if (v) return v;
+      if (invite && invite[keyAr]) {
+        v = String(invite[keyAr]).trim();
+        if (v) return v;
+      }
+      return enFallback;
+    }
+
+    opts = opts || {};
+    var useAr = opts.lang === "ar";
+
+    /* Arabic caption chain, per key: custom.<key>Ar → invite.<keyAr> → English. */
+    function pickAr(key, keyAr, enFallback) {
+      var v = pick(key + "Ar", "");
+      if (v) return v;
+      if (invite[keyAr]) {
+        v = String(invite[keyAr]).trim();
+        if (v) return v;
+      }
+      return enFallback;
+    }
+
     var C = {
-      names: pick("names", couple.names),
+      rtl: useAr,
+      names: useAr ? pickAr("names", "namesAr", pick("names", couple.names)) : pick("names", couple.names),
       monogram: pick("monogram", couple.monogram),
-      kicker: pick("kicker", invite.kicker),
-      title: pick("title", invite.eventTitle),
+      kicker: useAr ? pickAr("kicker", "kickerAr", pick("kicker", invite.kicker)) : pick("kicker", invite.kicker),
+      title: useAr ? pickAr("title", "eventTitleAr", pick("title", invite.eventTitle)) : pick("title", invite.eventTitle),
       date: pick("date", event.dateLabel || formatDate(event.date)),
       time: pick("time", event.time),
       venue: pick("venue", event.venue),
