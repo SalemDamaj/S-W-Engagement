@@ -36,7 +36,11 @@ window.INVITE_DEFAULTS = {
     musicUrl: ""
   },
   design: {
-    theme: "charcoal"
+    theme: "charcoal",
+    card: {
+      background: "charcoal",
+      image: ""
+    }
   },
   rsvp: {
     enabled: true,

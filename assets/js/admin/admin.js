@@ -4,6 +4,9 @@
   var sb = null;
   var authed = false;
   var initialLoadsDone = false;
+  var currentData = null;
+  var cardState = { background: "charcoal", image: "" };
+  var inviteeRows = [];
 
   function $(id) { return document.getElementById(id); }
   function esc(v) {
@@ -85,6 +88,7 @@
         countdownTarget: v("event_countdownTarget") || ""
       },
       media: { photo: v("media_photo"), videoUrl: v("media_videoUrl"), musicUrl: v("media_musicUrl") },
+      design: { theme: "charcoal", card: { background: cardState.background, image: cardState.image } },
       rsvp: {
         enabled: ck("rsvp_enabled"),
         maxGuests: isNum(v("rsvp_maxGuests")),
@@ -140,6 +144,12 @@
     set("st_shareText", data.settings.shareText);
     var photoPrev = $("photo-preview");
     if (photoPrev) { photoPrev.src = data.media.photo || ""; photoPrev.style.display = data.media.photo ? "block" : "none"; }
+    if (data.design && data.design.card) {
+      cardState.background = data.design.card.background || cardState.background;
+      cardState.image = data.design.card.image || "";
+    }
+    currentData = data;
+    syncCardUi();
   }
 
   function toLocal(iso) {
@@ -160,18 +170,19 @@
   }
 
   function switchTab(name) {
-    ["invitation", "media", "guests"].forEach(function (t) {
+    ["invitation", "media", "card", "guests"].forEach(function (t) {
       var isActive = t === name;
       var tabBtn = $("tab-" + t);
       var pane = $("pane-" + t);
       if (tabBtn) tabBtn.classList.toggle("active", isActive);
       if (pane) pane.classList.toggle("hidden", !isActive);
     });
-    if (name === "guests") loadGuests();
+    if (name === "guests") { loadGuests(); loadInvitees(); }
+    if (name === "card") renderCardPreview();
   }
 
   function wire() {
-    ["invitation", "media", "guests"].forEach(function (t) {
+    ["invitation", "media", "card", "guests"].forEach(function (t) {
       var btn = $("tab-" + t);
       if (btn) btn.addEventListener("click", function () { switchTab(t); });
     });
@@ -231,6 +242,9 @@
 
     var exportBtn = $("export-csv");
     if (exportBtn) exportBtn.addEventListener("click", exportCsv);
+
+    wireInvitees();
+    wireCard();
   }
 
   function describeSaveError(err) {
@@ -395,6 +409,195 @@
     setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
   }
 
+  /* ---------- Invitees (who to send invitations to) ---------- */
+
+  async function loadInvitees() {
+    if (!sb) return;
+    var res = await sb.from("invitees").select("*").order("created_at", { ascending: false }).limit(2000);
+    if (res.error) { toast("Could not load invitees: " + res.error.message, "err"); return; }
+    inviteeRows = res.data || [];
+    renderInvitees();
+  }
+
+  function renderInvitees() {
+    var rows = inviteeRows;
+    var tbody = $("invitees-body");
+    var empty = $("invitees-empty");
+    if (empty) empty.classList.toggle("hidden", rows.length > 0);
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    var seats = 0;
+    rows.forEach(function (r) {
+      seats += Number(r.guests) || 1;
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td><strong>" + esc(r.name) + "</strong></td>" +
+        "<td>" + (Number(r.guests) || 1) + "</td>" +
+        "<td>" + esc(r.phone || "") + "</td>" +
+        '<td><button type="button" class="btn danger" data-delinv="' + r.id + '">Delete</button></td>';
+      tbody.appendChild(tr);
+    });
+    tbody.querySelectorAll("[data-delinv]").forEach(function (btn) {
+      btn.addEventListener("click", function () { deleteInvitee(btn.getAttribute("data-delinv")); });
+    });
+    var sInv = $("stat-invitees"); if (sInv) sInv.textContent = rows.length;
+    var sSeats = $("stat-seats"); if (sSeats) sSeats.textContent = seats;
+  }
+
+  async function addInvitee(name, guests, phone) {
+    var res = await sb.from("invitees").insert({ name: name, guests: guests, phone: phone || null });
+    if (res.error) { toast("Could not add invitee: " + res.error.message, "err"); return false; }
+    toast("Invitee added.");
+    loadInvitees();
+    return true;
+  }
+
+  async function deleteInvitee(id) {
+    if (!window.confirm("Delete this invitee?")) return;
+    var res = await sb.from("invitees").delete().eq("id", id);
+    if (res.error) { toast("Delete failed: " + res.error.message, "err"); return; }
+    toast("Invitee deleted.");
+    loadInvitees();
+  }
+
+  function exportInvitees() {
+    var rows = inviteeRows.map(function (r) { return [r.name, r.guests, r.phone || ""]; });
+    if (!rows.length) { toast("Nothing to export yet.", "err"); return; }
+    var csv = [["Name", "Guests", "Phone"]].concat(rows)
+      .map(function (r) { return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(","); })
+      .join("\r\n");
+    var blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    var link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "invitees.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
+  }
+
+  function wireInvitees() {
+    var form = $("invitee-form");
+    if (form) form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var nameVal = $("invitee-name");
+      var guestVal = $("invitee-guests");
+      var phoneVal = $("invitee-phone");
+      var name = (nameVal.value || "").trim();
+      var guests = Math.max(1, Math.min(50, parseInt(guestVal.value, 10) || 1));
+      var phone = (phoneVal.value || "").trim();
+      if (!name) { toast("Please enter a name.", "err"); return; }
+      addInvitee(name, guests, phone).then(function (ok) {
+        if (ok) { form.reset(); guestVal.value = "1"; }
+      });
+    });
+    var expBtn = $("export-invitees");
+    if (expBtn) expBtn.addEventListener("click", exportInvitees);
+  }
+
+  /* ---------- Downloadable invitation card ---------- */
+
+  function syncCardUi() {
+    var swatches = document.querySelectorAll("#card-swatches .swatch");
+    swatches.forEach(function (s) {
+      s.classList.toggle("active", s.getAttribute("data-bg") === cardState.background);
+    });
+    var prev = $("cardbg-preview");
+    if (prev) {
+      prev.src = cardState.image || "";
+      prev.style.display = cardState.image ? "block" : "none";
+    }
+    var info = $("upload-cardbg-info");
+    if (info) {
+      info.innerHTML = cardState.image
+        ? '<p class="name">Custom background</p><p class="url">' + esc(cardState.image) + "</p>"
+        : '<p class="name">Use one of the preset styles above, or upload your own background photo.</p>';
+    }
+  }
+
+  function renderCardPreview() {
+    if (!currentData) return;
+    var img = $("card-preview");
+    var loading = $("card-preview-loading");
+    if (!img) return;
+    if (loading) loading.classList.remove("hidden");
+    window.InviteCard.paint(currentData, cardState).then(function (canvas) {
+      img.src = canvas.toDataURL("image/png");
+      if (loading) loading.classList.add("hidden");
+    });
+  }
+
+  function downloadCard() {
+    if (!currentData) { toast("No settings loaded yet.", "err"); return; }
+    var btn = $("download-card");
+    if (btn) btn.disabled = true;
+    window.InviteCard.paint(currentData, cardState).then(function (canvas) {
+      canvas.toBlob(function (blob) {
+        var link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "engagement-invitation.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
+        if (btn) btn.disabled = false;
+        toast("Invitation card downloaded.", "ok");
+      }, "image/png");
+    });
+  }
+
+  async function uploadCardBg(file, done) {
+    var ext = (file.name.split(".").pop() || "png").toLowerCase();
+    var path = "card/bg-" + Date.now() + "-" + Math.round(Math.random() * 1e4) + "." + ext;
+    var res = await sb.storage.from("invite-media").upload(path, file, { upsert: true, cacheControl: "3600" });
+    if (res.error) { toast("Upload failed: " + res.error.message, "err"); if (done) done(); return; }
+    var pub = sb.storage.from("invite-media").getPublicUrl(path);
+    var url = pub.data && pub.data.publicUrl;
+    cardState.image = url || "";
+    syncCardUi();
+    renderCardPreview();
+    toast("Background uploaded. Press \u201CSave card settings\u201D to keep it.");
+    if (done) done();
+  }
+
+  function wireCard() {
+    var swatches = document.querySelectorAll("#card-swatches .swatch");
+    swatches.forEach(function (s) {
+      s.addEventListener("click", function () {
+        cardState.background = s.getAttribute("data-bg");
+        syncCardUi();
+        renderCardPreview();
+      });
+    });
+    var fileBg = $("file-cardbg");
+    if (fileBg) fileBg.addEventListener("change", function () {
+      var f = fileBg.files && fileBg.files[0];
+      if (f) uploadCardBg(f, function () { fileBg.value = ""; });
+    });
+    var clearBg = $("clear-cardbg");
+    if (clearBg) clearBg.addEventListener("click", function () {
+      cardState.image = "";
+      syncCardUi();
+      renderCardPreview();
+    });
+    var saveCard = $("save-card");
+    if (saveCard) saveCard.addEventListener("click", async function () {
+      var el = saveCard;
+      el.disabled = true;
+      try {
+        var data = await saveSettings();
+        currentData = await loadSettings();
+        void data;
+        toast("Card settings saved. The download will use this background.");
+      } catch (err) {
+        toast(describeSaveError(err), "err");
+      } finally {
+        el.disabled = false;
+      }
+    });
+    var dl = $("download-card");
+    if (dl) dl.addEventListener("click", downloadCard);
+  }
+
   async function loadGraphAssets(client, current) {
     var s = current;
     try {
@@ -422,6 +625,8 @@
       var data = await loadSettings();
       fill(data);
       loadGuests();
+      loadInvitees();
+      renderCardPreview();
       loadGraphAssets(sb, data);
       $("app-view").classList.remove("hidden");
       $("login-view").classList.add("hidden");

@@ -6,6 +6,9 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Invitation Admin — Salem ♥ Wafaa</title>
   <link rel="stylesheet" href="assets/css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext x='16' y='22' font-size='14' text-anchor='middle' fill='%23a97f2f' font-family='serif'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
 </head>
 <body>
@@ -52,6 +55,7 @@
     <nav class="tabs">
       <button id="tab-invitation" class="tab active" type="button">Invitation</button>
       <button id="tab-media" class="tab" type="button">Photos &amp; Music</button>
+      <button id="tab-card" class="tab" type="button">Invitation Card</button>
       <button id="tab-guests" class="tab" type="button">Guest list</button>
     </nav>
 
@@ -278,13 +282,94 @@
 
       </section>
 
+      <section id="pane-card" class="hidden">
+
+        <div class="card">
+          <h2>Downloadable invitation card</h2>
+          <p class="hint">Choose a background and download the invitation as a ready-to-share portrait image card (1200&#215;1600 PNG). It pulls the names, date, time, venue and location from your invitation settings.</p>
+
+          <div class="field full" style="margin-bottom:16px;">
+            <label>Background style</label>
+            <div class="swatches" id="card-swatches">
+              <label class="swatch" data-bg="charcoal"><i style="background:linear-gradient(165deg,#372a0f,#0f0f0c);"></i><span>Charcoal</span></label>
+              <label class="swatch" data-bg="ivory"><i style="background:linear-gradient(165deg,#fff6e0,#e5d6b4);"></i><span>Ivory</span></label>
+              <label class="swatch" data-bg="emerald"><i style="background:linear-gradient(165deg,#1e4630,#071409);"></i><span>Emerald</span></label>
+              <label class="swatch" data-bg="rose"><i style="background:linear-gradient(165deg,#5c1d26,#180406);"></i><span>Rose</span></label>
+              <label class="swatch" data-bg="navy"><i style="background:linear-gradient(165deg,#243b60,#080c16);"></i><span>Navy</span></label>
+            </div>
+          </div>
+
+          <div class="upload-row">
+            <img id="cardbg-preview" alt="Selected background" style="display:none;">
+            <div class="upload-info" id="upload-cardbg-info">
+              <p class="name">Use one of the preset styles above, or upload your own background photo.</p>
+            </div>
+          </div>
+          <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+            <label for="file-cardbg" class="btn">Choose background image&hellip;</label>
+            <input id="file-cardbg" type="file" accept="image/*" class="hidden">
+            <button id="clear-cardbg" type="button" class="btn">Use preset instead</button>
+          </div>
+
+          <div class="card-preview-wrap">
+            <div class="card-preview">
+              <img id="card-preview" alt="Invitation card preview">
+              <div id="card-preview-loading" class="card-preview-loading hidden">Rendering&hellip;</div>
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-top:16px;">
+            <button id="save-card" type="button" class="btn primary">Save card settings</button>
+            <button id="download-card" type="button" class="btn">Download image</button>
+          </div>
+        </div>
+
+      </section>
+
       <section id="pane-guests" class="hidden">
+
+        <div class="card">
+          <div class="table-tools">
+            <h2 style="margin:0; font-size:0.95rem;">Invitees</h2>
+            <button id="export-invitees" type="button" class="btn">Export CSV</button>
+          </div>
+          <p class="hint">Track who you'll send the invitation to and how many guests each one can bring. Phone numbers are exported for easy WhatsApp sending.</p>
+          <form id="invitee-form" class="invitee-form">
+            <div class="field">
+              <label>Name</label>
+              <input id="invitee-name" type="text" required placeholder="Aunt Fatima">
+            </div>
+            <div class="field">
+              <label>Guests</label>
+              <input id="invitee-guests" type="number" min="1" max="50" value="1" required>
+            </div>
+            <div class="field">
+              <label>Phone (WhatsApp, optional)</label>
+              <input id="invitee-phone" type="tel" placeholder="+9665xxxxxxxx">
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <button type="submit" class="btn primary">Add invitee</button>
+            </div>
+          </form>
+          <p class="hint hidden" id="invitees-empty">No invitees yet. Add the first one above.</p>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead>
+                <tr><th>Name</th><th>Guests</th><th>Phone</th><th></th></tr>
+              </thead>
+              <tbody id="invitees-body"></tbody>
+            </table>
+          </div>
+        </div>
 
         <div class="stat-row">
           <div class="stat"><b id="stat-total">0</b><span>Replies</span></div>
           <div class="stat"><b id="stat-accepts">0</b><span>Accepting</span></div>
           <div class="stat"><b id="stat-declines">0</b><span>Declining</span></div>
-          <div class="stat"><b id="stat-guests">0</b><span>Total guests</span></div>
+          <div class="stat"><b id="stat-guests">0</b><span>Guests coming</span></div>
+          <div class="stat"><b id="stat-invitees">0</b><span>Invitees</span></div>
+          <div class="stat"><b id="stat-seats">0</b><span>Seats</span></div>
         </div>
 
         <div class="card">
@@ -319,6 +404,7 @@
   <script src="supabase/config.js"></script>
   <script src="assets/js/vendor/supabase.min.js"></script>
   <script src="assets/js/admin/supabase.js"></script>
+  <script src="assets/js/admin/card.js"></script>
   <script src="assets/js/admin/admin.js"></script>
 </body>
 </html>
