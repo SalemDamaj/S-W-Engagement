@@ -110,6 +110,8 @@
     var C = {};
     ["names", "monogram", "kicker", "title", "message", "date", "time", "venue", "location", "footer"].forEach(function (k) {
       var s = (v("card_" + k) || "").trim();
+      var sAr = (v("card_" + k + "Ar") || "").trim();
+      if (sAr) C[k + "Ar"] = sAr;
       C[k] = s;
     });
     // If a folder is empty we fall back so the card always has meaningful text when no invitee is shown.
@@ -172,6 +174,7 @@
     }
     ["names", "monogram", "kicker", "title", "message", "date", "time", "venue", "location", "footer"].forEach(function (k) {
       set("card_" + k, (cardState.custom || {})[k] || "");
+      set("card_" + k + "Ar", (cardState.custom || {})[k + "Ar"] || "");
     });
     currentData = data;
     syncCardUi();
@@ -465,7 +468,7 @@
     });
     tbody.querySelectorAll("[data-cardinv]").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        downloadCardFor(btn.getAttribute("data-cardinv"), btn.getAttribute("data-guests"));
+        downloadCardFor(btn.getAttribute("data-cardinv"), btn.getAttribute("data-guests"), window.cardLang || "en");
       });
     });
     tbody.querySelectorAll("[data-delinv]").forEach(function (btn) {
