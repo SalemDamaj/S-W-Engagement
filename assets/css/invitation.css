@@ -226,10 +226,13 @@ body.entered #music-toggle { opacity: 1; pointer-events: auto; }
   font-family: var(--serif);
   font-style: italic;
   font-weight: 300;
-  font-size: clamp(1rem, 4vw, 1.25rem);
+  font-size: clamp(0.72rem, 3.6vw, 1.25rem);
   letter-spacing: 0.06em;
   color: var(--ink);
   margin: 12px 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .gate-title {
