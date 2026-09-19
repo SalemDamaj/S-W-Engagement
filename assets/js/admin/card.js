@@ -293,18 +293,92 @@
 
     if (C.invitee) {
       spacedFit(ctx, C.invitee, cx, dividerY + 42, W - 360, 44, 26, "italic 500", '"Cormorant Garamond", serif', 1, accent, accent);
-      var gLabel = C.guests === 1 ? "1 guest allowed" : (C.guests + " guests allowed");
-      var guestsY = dividerY + 86;
-      if (guestsY < 1520) {
-        spacedFit(ctx, gLabel.toUpperCase(), cx, guestsY, W - 420, 23, 15, "500", '"Montserrat", sans-serif', 7, muted, null);
-      }
     } else if (C.footer) {
       spacedFit(ctx, C.footer, cx, dividerY + 44, W - 360, 36, 20, "italic 400", '"Cormorant Garamond", serif', 1, muted, null);
     } else if (C.monogram) {
       spaced(ctx, C.monogram, cx, dividerY + 40, "", 66, '"Great Vibes", cursive', 0, accent, accent);
     }
+
+    var gLabel = C.guests === 1 ? "1 guest allowed" : (C.guests + " guests allowed");
+    var guestsY = dividerY + 86;
+    if (guestsY < 1520) {
+      spacedFit(ctx, gLabel.toUpperCase(), cx, guestsY, W - 420, 23, 15, "500", '"Montserrat", sans-serif', 7, muted, null);
+    }
   }
 
+  function drawContentAr(ctx, W, H, p, C) {
+    var cx = W / 2;
+    var text = p.text;
+    var accent = p.accent;
+    var muted = p.muted;
+    var arFace = '"Noto Naskh Arabic", serif';
+
+    if (C.kicker) {
+      arFit(ctx, C.kicker, cx, 304, W - 400, 24, 15, "400", '"Cairo", sans-serif', accent, accent);
+    }
+
+    if (C.monogram) {
+      spaced(ctx, C.monogram, cx, 458, "", 138, '"Great Vibes", cursive', 0, accent, accent);
+    }
+
+    if (C.names) {
+      arFit(ctx, C.names, cx, 712, W - 380, 108, 44, "italic 400", '"Cormorant Garamond", serif', text, null);
+    }
+
+    if (C.title) {
+      arFit(ctx, C.title, cx, 820, W - 400, 28, 18, "500", '"Montserrat", sans-serif', accent, null);
+    }
+
+    drawOrnament(ctx, cx, 906, p, 46);
+
+    var msgEnd = 906;
+    if (C.message.length) {
+      ctx.globalAlpha = 0.96;
+      for (var m = 0; m < C.message.length; m++) {
+        msgEnd = 988 + m * 46;
+        arFit(ctx, C.message[m], cx, msgEnd, W - 380, 40, 22, "italic 400", '"Cormorant Garamond", serif', text, null);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    var compact = C.message.length > 0;
+    var dateY = compact ? msgEnd + 58 : 1088;
+    var timeY = dateY + (compact ? 80 : 92);
+    var venueY = timeY + (compact ? 110 : 126);
+    var locationY = venueY + (compact ? 72 : 82);
+    var dividerY = locationY + (compact ? 50 : 54);
+
+    if (C.date) {
+      arFit(ctx, C.date, cx, dateY, W - 380, 42, 24, "italic 400", '"Cormorant Garamond", serif', text, null);
+    }
+
+    if (C.time) {
+      arText(ctx, C.time, cx, timeY, "300", 30, '"Montserrat", sans-serif', accent, null);
+    }
+
+    if (C.venue) {
+      arFit(ctx, C.venue, cx, venueY, W - 400, 44, 26, "italic 400", '"Cormorant Garamond", serif', text, null);
+    }
+
+    if (C.location) {
+      arFit(ctx, C.location, cx, locationY, W - 420, 26, 17, "300", '"Montserrat", sans-serif', muted, null);
+    }
+
+    ctx.fillStyle = accent;
+    ctx.globalAlpha = 0.85;
+    ctx.fillRect(cx - 130, dividerY, 260, 1);
+    ctx.globalAlpha = 1;
+
+    if (C.invitee) {
+      arText(ctx, C.invitee, cx, dividerY + 38, "italic 500", 42, '"Cormorant Garamond", serif', accent, accent);
+    }
+
+    var gLabel = C.guests === 1 ? "\u0636\u064a\u0641 \u0648\u0627\u062d\u062f \u0645\u0633\u0645\u0648\u062d \u0628\u0647" : (C.guests + " \u0636\u064a\u0648\u0641 \u0645\u0633\u0645\u0648\u062d \u0628\u0647\u0645");
+    var guestsY = dividerY + 86;
+    if (C.guests && guestsY < 1520) {
+      arText(ctx, gLabel, cx, guestsY, "500", 34, arFace, muted, null);
+    }
+  }
   function paint(data, bg, opts) {
     var W = 1200;
     var H = 1600;
