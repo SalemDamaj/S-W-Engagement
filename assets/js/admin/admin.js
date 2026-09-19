@@ -563,6 +563,7 @@
 
   function downloadCard(opts) {
     opts = opts || {};
+    if (opts.lang === undefined) opts.lang = window.cardLang || "en";
     if (!currentData) { toast("No card design loaded yet.", "err"); return; }
     var btn = $("download-card");
     if (btn && !opts.silent) btn.disabled = true;
@@ -655,6 +656,11 @@
     });
     var dl = $("download-card");
     if (dl) dl.addEventListener("click", downloadCard);
+    var langSel = $("cardLang");
+    if (langSel) {
+      window.cardLang = langSel.value || "en";
+      langSel.addEventListener("change", function () { window.cardLang = langSel.value || "en"; });
+    }
   }
 
   async function loadGraphAssets(client, current) {
