@@ -565,7 +565,7 @@
     if (btn && !opts.silent) btn.disabled = true;
     var name = opts.name;
     var guests = opts.guests;
-    window.InviteCard.paint(currentData, cardState, { inviteeName: name, guests: guests }).then(function (canvas) {
+    window.InviteCard.paint(currentData, cardState, { inviteeName: name, guests: guests, lang: opts.lang }).then(function (canvas) {
       canvas.toBlob(function (blob) {
         var link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
@@ -580,8 +580,8 @@
     });
   }
 
-  function downloadCardFor(name, guests) {
-    downloadCard({ name: name || "", guests: Number(guests) || 1 });
+  function downloadCardFor(name, guests, lang) {
+    downloadCard({ name: name || "", guests: Number(guests) || 1, lang: lang });
   }
 
   function downloadAllCards() {
@@ -596,7 +596,7 @@
         return;
       }
       var r = inviteeRows[i++];
-      downloadCard({ name: r.name, guests: Number(r.guests) || 1, silent: true }).then(next);
+      downloadCard({ name: r.name, guests: Number(r.guests) || 1, silent: true, lang: window.cardLang || "en" }).then(next);
     };
     next();
   }

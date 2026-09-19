@@ -448,9 +448,9 @@
     C.message = msg ? String(msg).split("\n") : [];
 
     opts = opts || {};
+    C.guests = Math.max(1, Math.min(50, Number(opts.guests) || 1));
     if (opts.inviteeName && String(opts.inviteeName).trim()) {
       C.invitee = String(opts.inviteeName).trim();
-      C.guests = Math.max(1, Math.min(50, Number(opts.guests) || 1));
     }
 
     return Promise.all([ensureFonts(), imageUrl ? loadImage(imageUrl) : Promise.resolve(null)]).then(function (r) {

@@ -291,18 +291,22 @@
             <div class="field full">
               <label>Names line (e.g. Salem &amp; Wafaa)</label>
               <input name="card_names" type="text">
+<input name="card_namesAr" type="text" placeholder="العربية">
             </div>
             <div class="field full">
               <label>Monogram (e.g. S &hearts; W)</label>
               <input name="card_monogram" type="text">
+<input name="card_monogramAr" type="text" placeholder="العربية">
             </div>
             <div class="field full">
               <label>Kicker (small top line)</label>
               <input name="card_kicker" type="text" placeholder="Together with their families">
+<input name="card_kickerAr" type="text" placeholder="العربية">
             </div>
             <div class="field full">
               <label>Title line</label>
               <input name="card_title" type="text" placeholder="ENGAGEMENT CELEBRATION">
+<input name="card_titleAr" type="text" placeholder="العربية">
             </div>
             <div class="field full">
               <label>Message (one line per paragraph, optional)</label>
@@ -311,22 +315,27 @@
             <div class="field full">
               <label>Date line</label>
               <input name="card_date" type="text" placeholder="FRIDAY, JANUARY 15, 2027">
+<input name="card_dateAr" type="text" placeholder="العربية">
             </div>
             <div class="field">
               <label>Time</label>
               <input name="card_time" type="text" placeholder="6:00 PM">
+<input name="card_timeAr" type="text" placeholder="العربية">
             </div>
             <div class="field">
               <label>Venue</label>
               <input name="card_venue" type="text" placeholder="The Grand Ballroom">
+<input name="card_venueAr" type="text" placeholder="العربية">
             </div>
             <div class="field full">
               <label>Location</label>
               <input name="card_location" type="text" placeholder="Rosewood Hotel, Riyadh">
+<input name="card_locationAr" type="text" placeholder="العربية">
             </div>
             <div class="field full">
               <label>Footer line (optional)</label>
               <input name="card_footer" type="text" placeholder="Kindly confirm your attendance">
+<input name="card_footerAr" type="text" placeholder="العربية">
             </div>
           </div>
         </div>
@@ -366,6 +375,8 @@
           </div>
 
           <div class="form-actions" style="margin-top:16px;">
+            <select id="cardLang" style="margin-left:8px;" aria-label="Card language"><option value="en">English</option><option value="ar">العربية</option></select>
+
             <button id="download-all-cards" type="button" class="btn">Download all cards</button>
             <button id="save-card" type="button" class="btn primary">Save card settings</button>
             <button id="download-card" type="button" class="btn">Download image</button>
