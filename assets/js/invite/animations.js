@@ -15,6 +15,7 @@
     el.textContent = "";
     var chars = Array.from ? Array.from(text) : text.split("");
     chars.forEach(function (ch) {
+      if (ch === "\n" || ch === "\r") ch = " ";
       var span = document.createElement("span");
       span.className = "ch";
       if (ch === " ") {

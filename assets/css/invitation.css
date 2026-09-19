@@ -321,6 +321,10 @@ body.entered #music-toggle { opacity: 1; pointer-events: auto; }
   color: var(--ivory);
   margin: 0;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  flex-wrap: nowrap;
   white-space: nowrap;
 }
 #names .ch { display: inline-block; will-change: transform; }
