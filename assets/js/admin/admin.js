@@ -88,7 +88,7 @@
         countdownTarget: v("event_countdownTarget") || ""
       },
       media: { photo: v("media_photo"), videoUrl: v("media_videoUrl"), musicUrl: v("media_musicUrl") },
-      design: { theme: "charcoal", card: { background: cardState.background, image: cardState.image } },
+      design: { theme: "charcoal", card: { background: cardState.background, image: cardState.image, custom: gatherCardCustom() } },
       rsvp: {
         enabled: ck("rsvp_enabled"),
         maxGuests: isNum(v("rsvp_maxGuests")),
@@ -101,6 +101,27 @@
         shareText: v("st_shareText")
       }
     };
+  }
+
+  function gatherCardCustom() {
+    var couple = currentData ? currentData.couple : {};
+    var invite = currentData ? currentData.invite : {};
+    var event = currentData ? currentData.event : {};
+    var C = {};
+    ["names", "monogram", "kicker", "title", "message", "date", "time", "venue", "location", "footer"].forEach(function (k) {
+      var s = (v("card_" + k) || "").trim();
+      C[k] = s;
+    });
+    // If a folder is empty we fall back so the card always has meaningful text when no invitee is shown.
+    if (!C.names) C.names = (couple.names || ((couple.hisName || "") + " ♥ " + (couple.herName || ""))).trim();
+    if (!C.monogram) C.monogram = (couple.monogram || ("S" + " ♥ " + "W")).trim();
+    if (!C.kicker) C.kicker = (invite.kicker || "Together with our families").trim();
+    if (!C.title) C.title = (invite.eventTitle || "ENGAGEMENT CELEBRATION").trim();
+    if (!C.date) C.date = (event.dateLabel || "").trim();
+    if (!C.time) C.time = (event.time || "").trim();
+    if (!C.venue) C.venue = (event.venue || "").trim();
+    if (!C.location) C.location = (event.location || "").trim();
+    return C;
   }
 
   function fill(data) {
@@ -147,7 +168,11 @@
     if (data.design && data.design.card) {
       cardState.background = data.design.card.background || cardState.background;
       cardState.image = data.design.card.image || "";
+      cardState.custom = data.design.card.custom || {};
     }
+    ["names", "monogram", "kicker", "title", "message", "date", "time", "venue", "location", "footer"].forEach(function (k) {
+      set("card_" + k, (cardState.custom || {})[k] || "");
+    });
     currentData = data;
     syncCardUi();
   }
@@ -433,8 +458,15 @@
       tr.innerHTML = "<td><strong>" + esc(r.name) + "</strong></td>" +
         "<td>" + (Number(r.guests) || 1) + "</td>" +
         "<td>" + esc(r.phone || "") + "</td>" +
-        '<td><button type="button" class="btn danger" data-delinv="' + r.id + '">Delete</button></td>';
+        '<td style="white-space:nowrap;">' +
+        '<button type="button" class="btn" data-cardinv="' + esc(r.name) + '" data-guests="' + (Number(r.guests) || 1) + '">Card</button> ' +
+        '<button type="button" class="btn danger" data-delinv="' + r.id + '">Delete</button></td>';
       tbody.appendChild(tr);
+    });
+    tbody.querySelectorAll("[data-cardinv]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        downloadCardFor(btn.getAttribute("data-cardinv"), btn.getAttribute("data-guests"));
+      });
     });
     tbody.querySelectorAll("[data-delinv]").forEach(function (btn) {
       btn.addEventListener("click", function () { deleteInvitee(btn.getAttribute("data-delinv")); });
@@ -526,11 +558,14 @@
     });
   }
 
-  function downloadCard() {
-    if (!currentData) { toast("No settings loaded yet.", "err"); return; }
+  function downloadCard(opts) {
+    opts = opts || {};
+    if (!currentData) { toast("No card design loaded yet.", "err"); return; }
     var btn = $("download-card");
-    if (btn) btn.disabled = true;
-    window.InviteCard.paint(currentData, cardState).then(function (canvas) {
+    if (btn && !opts.silent) btn.disabled = true;
+    var name = opts.name;
+    var guests = opts.guests;
+    window.InviteCard.paint(currentData, cardState, { inviteeName: name, guests: guests }).then(function (canvas) {
       canvas.toBlob(function (blob) {
         var link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
@@ -543,6 +578,27 @@
         toast("Invitation card downloaded.", "ok");
       }, "image/png");
     });
+  }
+
+  function downloadCardFor(name, guests) {
+    downloadCard({ name: name || "", guests: Number(guests) || 1 });
+  }
+
+  function downloadAllCards() {
+    if (!inviteeRows.length) { toast("No invitees yet to download cards for.", "err"); return; }
+    var btn = $("download-all-cards");
+    if (btn) btn.disabled = true;
+    var i = 0;
+    var next = function () {
+      if (i >= inviteeRows.length) {
+        if (btn) btn.disabled = false;
+        toast("All cards downloaded.");
+        return;
+      }
+      var r = inviteeRows[i++];
+      downloadCard({ name: r.name, guests: Number(r.guests) || 1, silent: true }).then(next);
+    };
+    next();
   }
 
   async function uploadCardBg(file, done) {

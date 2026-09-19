@@ -285,6 +285,53 @@
       <section id="pane-card" class="hidden">
 
         <div class="card">
+          <h2>Card content</h2>
+          <p class="hint">Write whatever should appear on the card. Leave a field empty to use your invitation settings. The invitee's name and guests are added automatically when you download a personalized card.</p>
+          <div class="grid">
+            <div class="field full">
+              <label>Names line (e.g. Salem &amp; Wafaa)</label>
+              <input name="card_names" type="text">
+            </div>
+            <div class="field full">
+              <label>Monogram (e.g. S &hearts; W)</label>
+              <input name="card_monogram" type="text">
+            </div>
+            <div class="field full">
+              <label>Kicker (small top line)</label>
+              <input name="card_kicker" type="text" placeholder="Together with their families">
+            </div>
+            <div class="field full">
+              <label>Title line</label>
+              <input name="card_title" type="text" placeholder="ENGAGEMENT CELEBRATION">
+            </div>
+            <div class="field full">
+              <label>Message (one line per paragraph, optional)</label>
+              <textarea name="card_message" rows="2" placeholder="You are cordially invited to celebrate with us"></textarea>
+            </div>
+            <div class="field full">
+              <label>Date line</label>
+              <input name="card_date" type="text" placeholder="FRIDAY, JANUARY 15, 2027">
+            </div>
+            <div class="field">
+              <label>Time</label>
+              <input name="card_time" type="text" placeholder="6:00 PM">
+            </div>
+            <div class="field">
+              <label>Venue</label>
+              <input name="card_venue" type="text" placeholder="The Grand Ballroom">
+            </div>
+            <div class="field full">
+              <label>Location</label>
+              <input name="card_location" type="text" placeholder="Rosewood Hotel, Riyadh">
+            </div>
+            <div class="field full">
+              <label>Footer line (optional)</label>
+              <input name="card_footer" type="text" placeholder="Kindly confirm your attendance">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
           <h2>Downloadable invitation card</h2>
           <p class="hint">Choose a background and download the invitation as a ready-to-share portrait image card (1200&#215;1600 PNG). It pulls the names, date, time, venue and location from your invitation settings.</p>
 
@@ -319,6 +366,7 @@
           </div>
 
           <div class="form-actions" style="margin-top:16px;">
+            <button id="download-all-cards" type="button" class="btn">Download all cards</button>
             <button id="save-card" type="button" class="btn primary">Save card settings</button>
             <button id="download-card" type="button" class="btn">Download image</button>
           </div>
@@ -333,7 +381,7 @@
             <h2 style="margin:0; font-size:0.95rem;">Invitees</h2>
             <button id="export-invitees" type="button" class="btn">Export CSV</button>
           </div>
-          <p class="hint">Track who you'll send the invitation to and how many guests each one can bring. Phone numbers are exported for easy WhatsApp sending.</p>
+          <p class="hint">Track who you'll send the invitation to and how many guests each one can bring. Use the <strong>Invitation</strong> button to download a personalized card with their name and guest count, or export for WhatsApp sending.</p>
           <form id="invitee-form" class="invitee-form">
             <div class="field">
               <label>Name</label>
@@ -356,7 +404,7 @@
           <div style="overflow-x:auto;">
             <table>
               <thead>
-                <tr><th>Name</th><th>Guests</th><th>Phone</th><th></th></tr>
+                <tr><th>Name</th><th>Guests</th><th>Phone</th><th>Invitation</th><th></th></tr>
               </thead>
               <tbody id="invitees-body"></tbody>
             </table>

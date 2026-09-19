@@ -185,7 +185,7 @@
     ctx.shadowBlur = 0;
   }
 
-  function drawContent(ctx, W, H, p, couple, invite, event) {
+  function drawContent(ctx, W, H, p, C) {
     var cx = W / 2;
     var text = p.text;
     var accent = p.accent;
@@ -193,55 +193,77 @@
     ctx.textAlign = "center";
     ctx.textBaseline = "alphabetic";
 
-    var kicker = String(invite.kicker || "").trim();
-    if (kicker) {
-      spacedFit(ctx, kicker.toUpperCase(), cx, 302, W - 400, 26, 13, "300", '"Montserrat", sans-serif', 9, accent, accent);
+    if (C.kicker) {
+      spacedFit(ctx, C.kicker.toUpperCase(), cx, 302, W - 400, 26, 13, "300", '"Montserrat", sans-serif', 9, accent, accent);
     }
 
-    var monogram = String(couple.monogram || "S ♥ W");
-    spaced(ctx, monogram, cx, 458, "", 138, '"Great Vibes", cursive', 0, accent, accent);
-
-    var names = String(couple.names || "").trim();
-    if (names) {
-      spacedFit(ctx, names, cx, 712, W - 380, 116, 40, "italic 400", '"Cormorant Garamond", serif', 2, text, null);
+    if (C.monogram) {
+      spaced(ctx, C.monogram, cx, 458, "", 138, '"Great Vibes", cursive', 0, accent, accent);
     }
 
-    var title = String(invite.eventTitle || "").trim();
-    if (title) {
-      spacedFit(ctx, title.toUpperCase(), cx, 820, W - 400, 30, 14, "500", '"Montserrat", sans-serif', 14, accent, null);
+    if (C.names) {
+      spacedFit(ctx, C.names, cx, 712, W - 380, 116, 40, "italic 400", '"Cormorant Garamond", serif', 2, text, null);
+    }
+
+    if (C.title) {
+      spacedFit(ctx, C.title.toUpperCase(), cx, 820, W - 400, 30, 14, "500", '"Montserrat", sans-serif', 14, accent, null);
     }
 
     drawOrnament(ctx, cx, 906, p, 46);
 
-    var dateLabel = String(event.dateLabel || "").trim() || formatDate(event.date);
-    if (dateLabel) {
-      spacedFit(ctx, dateLabel, cx, 1088, W - 380, 46, 22, "italic 400", '"Cormorant Garamond", serif', 3, text, null);
+    var msgEnd = 906;
+    if (C.message.length) {
+      ctx.globalAlpha = 0.96;
+      for (var m = 0; m < C.message.length; m++) {
+        msgEnd = 988 + m * 46;
+        spacedFit(ctx, C.message[m], cx, msgEnd, W - 380, 40, 22, "italic 400", '"Cormorant Garamond", serif', 1, text, null);
+      }
+      ctx.globalAlpha = 1;
     }
 
-    var time = String(event.time || "").trim();
-    if (time) {
-      spacedFit(ctx, time.toUpperCase(), cx, 1184, W - 420, 30, 16, "300", '"Montserrat", sans-serif', 10, accent, null);
+    var compact = C.message.length > 0;
+    var dateY = compact ? msgEnd + 58 : 1088;
+    var timeY = dateY + (compact ? 80 : 92);
+    var venueY = timeY + (compact ? 110 : 126);
+    var locationY = venueY + (compact ? 72 : 82);
+    var dividerY = locationY + (compact ? 50 : 54);
+
+    if (C.date) {
+      spacedFit(ctx, C.date, cx, dateY, W - 380, 46, 22, "italic 400", '"Cormorant Garamond", serif', 3, text, null);
     }
 
-    var venue = String(event.venue || "").trim();
-    if (venue) {
-      spacedFit(ctx, venue, cx, 1312, W - 400, 48, 26, "italic 400", '"Cormorant Garamond", serif', 2, text, null);
+    if (C.time) {
+      spacedFit(ctx, C.time.toUpperCase(), cx, timeY, W - 420, 30, 16, "300", '"Montserrat", sans-serif', 10, accent, null);
     }
 
-    var location = String(event.location || "").trim();
-    if (location) {
-      spacedFit(ctx, location, cx, 1396, W - 420, 25, 15, "300", '"Montserrat", sans-serif', 5, muted, null);
+    if (C.venue) {
+      spacedFit(ctx, C.venue, cx, venueY, W - 400, 48, 26, "italic 400", '"Cormorant Garamond", serif', 2, text, null);
+    }
+
+    if (C.location) {
+      spacedFit(ctx, C.location, cx, locationY, W - 420, 25, 15, "300", '"Montserrat", sans-serif', 5, muted, null);
     }
 
     ctx.fillStyle = accent;
     ctx.globalAlpha = 0.85;
-    ctx.fillRect(cx - 130, 1452, 260, 1);
+    ctx.fillRect(cx - 130, dividerY, 260, 1);
     ctx.globalAlpha = 1;
 
-    spaced(ctx, monogram, cx, 1482, "", 66, '"Great Vibes", cursive', 0, accent, accent);
+    if (C.invitee) {
+      spacedFit(ctx, C.invitee, cx, dividerY + 42, W - 360, 44, 26, "italic 500", '"Cormorant Garamond", serif', 1, accent, accent);
+      var gLabel = C.guests === 1 ? "1 guest allowed" : (C.guests + " guests allowed");
+      var guestsY = dividerY + 86;
+      if (guestsY < 1520) {
+        spacedFit(ctx, gLabel.toUpperCase(), cx, guestsY, W - 420, 23, 15, "500", '"Montserrat", sans-serif', 7, muted, null);
+      }
+    } else if (C.footer) {
+      spacedFit(ctx, C.footer, cx, dividerY + 44, W - 360, 36, 20, "italic 400", '"Cormorant Garamond", serif', 1, muted, null);
+    } else if (C.monogram) {
+      spaced(ctx, C.monogram, cx, dividerY + 40, "", 66, '"Great Vibes", cursive', 0, accent, accent);
+    }
   }
 
-  function paint(data, bg) {
+  function paint(data, bg, opts) {
     var W = 1200;
     var H = 1600;
     var canvas = document.createElement("canvas");
@@ -253,13 +275,43 @@
     var couple = data && data.couple ? data.couple : {};
     var invite = data && data.invite ? data.invite : {};
     var event = data && data.event ? data.event : {};
+    var custom = (data && data.design && data.design.card && data.design.card.custom) || {};
     var imageUrl = bg && bg.image;
+
+    function pick(key, fallback) {
+      var c = custom[key];
+      if (c === undefined || c === null) return fallback;
+      c = String(c);
+      if (c.trim() === "") return fallback;
+      return c;
+    }
+
+    var C = {
+      names: pick("names", couple.names),
+      monogram: pick("monogram", couple.monogram),
+      kicker: pick("kicker", invite.kicker),
+      title: pick("title", invite.eventTitle),
+      date: pick("date", event.dateLabel || formatDate(event.date)),
+      time: pick("time", event.time),
+      venue: pick("venue", event.venue),
+      location: pick("location", event.location),
+      footer: pick("footer", ""),
+      message: []
+    };
+    var msg = pick("message", "");
+    C.message = msg ? String(msg).split("\n") : [];
+
+    opts = opts || {};
+    if (opts.inviteeName && String(opts.inviteeName).trim()) {
+      C.invitee = String(opts.inviteeName).trim();
+      C.guests = Math.max(1, Math.min(50, Number(opts.guests) || 1));
+    }
 
     return Promise.all([ensureFonts(), imageUrl ? loadImage(imageUrl) : Promise.resolve(null)]).then(function (r) {
       var img = imageUrl ? r[1] : null;
       drawBackground(ctx, W, H, preset, img);
       drawFrame(ctx, W, H, preset);
-      drawContent(ctx, W, H, preset, couple, invite, event);
+      drawContent(ctx, W, H, preset, C);
       return canvas;
     });
   }
