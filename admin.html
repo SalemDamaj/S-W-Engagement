@@ -55,7 +55,6 @@
     <nav class="tabs">
       <button id="tab-invitation" class="tab active" type="button">Invitation</button>
       <button id="tab-media" class="tab" type="button">Photos &amp; Music</button>
-      <button id="tab-card" class="tab" type="button">Invitation Card</button>
       <button id="tab-guests" class="tab" type="button">Guest list</button>
     </nav>
 
@@ -282,109 +281,6 @@
 
       </section>
 
-      <section id="pane-card" class="hidden">
-
-        <div class="card">
-          <h2>Card content</h2>
-          <p class="hint">Write whatever should appear on the card. Leave a field empty to use your invitation settings. The invitee's name and guests are added automatically when you download a personalized card.</p>
-          <div class="grid">
-            <div class="field full">
-              <label>Names line (e.g. Salem &amp; Wafaa)</label>
-              <input name="card_names" type="text">
-<input name="card_namesAr" type="text" placeholder="العربية">
-            </div>
-            <div class="field full">
-              <label>Monogram (e.g. S &hearts; W)</label>
-              <input name="card_monogram" type="text">
-<input name="card_monogramAr" type="text" placeholder="العربية">
-            </div>
-            <div class="field full">
-              <label>Kicker (small top line)</label>
-              <input name="card_kicker" type="text" placeholder="Together with their families">
-<input name="card_kickerAr" type="text" placeholder="العربية">
-            </div>
-            <div class="field full">
-              <label>Title line</label>
-              <input name="card_title" type="text" placeholder="ENGAGEMENT CELEBRATION">
-<input name="card_titleAr" type="text" placeholder="العربية">
-            </div>
-            <div class="field full">
-              <label>Message (one line per paragraph, optional)</label>
-              <textarea name="card_message" rows="2" placeholder="You are cordially invited to celebrate with us"></textarea>
-            </div>
-            <div class="field full">
-              <label>Date line</label>
-              <input name="card_date" type="text" placeholder="FRIDAY, JANUARY 15, 2027">
-<input name="card_dateAr" type="text" placeholder="العربية">
-            </div>
-            <div class="field">
-              <label>Time</label>
-              <input name="card_time" type="text" placeholder="6:00 PM">
-<input name="card_timeAr" type="text" placeholder="العربية">
-            </div>
-            <div class="field">
-              <label>Venue</label>
-              <input name="card_venue" type="text" placeholder="The Grand Ballroom">
-<input name="card_venueAr" type="text" placeholder="العربية">
-            </div>
-            <div class="field full">
-              <label>Location</label>
-              <input name="card_location" type="text" placeholder="Rosewood Hotel, Riyadh">
-<input name="card_locationAr" type="text" placeholder="العربية">
-            </div>
-            <div class="field full">
-              <label>Footer line (optional)</label>
-              <input name="card_footer" type="text" placeholder="Kindly confirm your attendance">
-<input name="card_footerAr" type="text" placeholder="العربية">
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>Downloadable invitation card</h2>
-          <p class="hint">Choose a background and download the invitation as a ready-to-share portrait image card (1200&#215;1600 PNG). It pulls the names, date, time, venue and location from your invitation settings.</p>
-
-          <div class="field full" style="margin-bottom:16px;">
-            <label>Background style</label>
-            <div class="swatches" id="card-swatches">
-              <label class="swatch" data-bg="charcoal"><i style="background:linear-gradient(165deg,#372a0f,#0f0f0c);"></i><span>Charcoal</span></label>
-              <label class="swatch" data-bg="ivory"><i style="background:linear-gradient(165deg,#fff6e0,#e5d6b4);"></i><span>Ivory</span></label>
-              <label class="swatch" data-bg="emerald"><i style="background:linear-gradient(165deg,#1e4630,#071409);"></i><span>Emerald</span></label>
-              <label class="swatch" data-bg="rose"><i style="background:linear-gradient(165deg,#5c1d26,#180406);"></i><span>Rose</span></label>
-              <label class="swatch" data-bg="navy"><i style="background:linear-gradient(165deg,#243b60,#080c16);"></i><span>Navy</span></label>
-            </div>
-          </div>
-
-          <div class="upload-row">
-            <img id="cardbg-preview" alt="Selected background" style="display:none;">
-            <div class="upload-info" id="upload-cardbg-info">
-              <p class="name">Use one of the preset styles above, or upload your own background photo.</p>
-            </div>
-          </div>
-          <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
-            <label for="file-cardbg" class="btn">Choose background image&hellip;</label>
-            <input id="file-cardbg" type="file" accept="image/*" class="hidden">
-            <button id="clear-cardbg" type="button" class="btn">Use preset instead</button>
-          </div>
-
-          <div class="card-preview-wrap">
-            <div class="card-preview">
-              <img id="card-preview" alt="Invitation card preview">
-              <div id="card-preview-loading" class="card-preview-loading hidden">Rendering&hellip;</div>
-            </div>
-          </div>
-
-          <div class="form-actions" style="margin-top:16px;">
-            <select id="cardLang" style="margin-left:8px;" aria-label="Card language"><option value="en">English</option><option value="ar">العربية</option></select>
-
-            <button id="download-all-cards" type="button" class="btn">Download all cards</button>
-            <button id="save-card" type="button" class="btn primary">Save card settings</button>
-            <button id="download-card" type="button" class="btn">Download image</button>
-          </div>
-        </div>
-
-      </section>
-
       <section id="pane-guests" class="hidden">
 
         <div class="card">
@@ -463,7 +359,6 @@
   <script src="supabase/config.js"></script>
   <script src="assets/js/vendor/supabase.min.js"></script>
   <script src="assets/js/admin/supabase.js"></script>
-  <script src="assets/js/admin/card.js?v=3"></script>
   <script src="assets/js/admin/admin.js?v=2"></script>
 </body>
 </html>
