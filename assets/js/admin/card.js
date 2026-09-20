@@ -176,10 +176,10 @@
       coverDraw(ctx, img, W, H);
       /* layered soft veil: dark at top and bottom where text sits, lighter mid */
       var veil = ctx.createLinearGradient(0, 0, 0, H);
-      veil.addColorStop(0, "rgba(8,6,4,0.74)");
-      veil.addColorStop(0.32, "rgba(8,6,4,0.28)");
-      veil.addColorStop(0.6, "rgba(8,6,4,0.34)");
-      veil.addColorStop(1, "rgba(8,6,4,0.8)");
+      veil.addColorStop(0, "rgba(8,6,4,0.82)");
+      veil.addColorStop(0.28, "rgba(8,6,4,0.46)");
+      veil.addColorStop(0.5, "rgba(8,6,4,0.42)");
+      veil.addColorStop(0.72, "rgba(8,6,4,0.52)");
       ctx.fillStyle = veil;
       ctx.fillRect(0, 0, W, H);
       /* soft gold halo behind the crest / monogram zone so text floats */
