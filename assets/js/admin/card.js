@@ -300,10 +300,8 @@
     }
 
     var gLabel = C.guests === 1 ? "1 guest allowed" : (C.guests + " guests allowed");
-    var guestsY = dividerY + 86;
-    if (guestsY < 1520) {
-      spacedFit(ctx, gLabel.toUpperCase(), cx, guestsY, W - 420, 23, 15, "500", '"Montserrat", sans-serif', 7, muted, null);
-    }
+    var guestsY = Math.min(dividerY + 86, 1476);
+    spacedFit(ctx, gLabel.toUpperCase(), cx, guestsY, W - 420, 23, 15, "500", '"Montserrat", sans-serif', 7, muted, null);
   }
 
   function drawContentAr(ctx, W, H, p, C) {
@@ -314,7 +312,7 @@
     var arFace = '"Noto Naskh Arabic", serif';
 
     if (C.kicker) {
-      arFit(ctx, C.kicker, cx, 304, W - 400, 24, 15, "400", '"Cairo", sans-serif', accent, accent);
+      arFit(ctx, C.kicker, cx, 304, W - 400, 26, 17, "400", '"Cairo", sans-serif', accent, accent);
     }
 
     if (C.monogram) {
@@ -326,7 +324,7 @@
     }
 
     if (C.title) {
-      arFit(ctx, C.title, cx, 820, W - 400, 28, 18, "500", '"Montserrat", sans-serif', accent, null);
+      arFit(ctx, C.title, cx, 820, W - 400, 30, 20, "500", '"Montserrat", sans-serif', accent, null);
     }
 
     drawOrnament(ctx, cx, 906, p, 46);
@@ -349,19 +347,19 @@
     var dividerY = locationY + (compact ? 50 : 54);
 
     if (C.date) {
-      arFit(ctx, C.date, cx, dateY, W - 380, 42, 24, "italic 400", '"Cormorant Garamond", serif', text, null);
+      arFit(ctx, C.date, cx, dateY, W - 380, 44, 26, "italic 400", '"Cormorant Garamond", serif', text, null);
     }
 
     if (C.time) {
-      arText(ctx, C.time, cx, timeY, "300", 30, '"Montserrat", sans-serif', accent, null);
+      arText(ctx, C.time, cx, timeY, "300", 32, '"Montserrat", sans-serif', accent, null);
     }
 
     if (C.venue) {
-      arFit(ctx, C.venue, cx, venueY, W - 400, 44, 26, "italic 400", '"Cormorant Garamond", serif', text, null);
+      arFit(ctx, C.venue, cx, venueY, W - 400, 46, 28, "italic 400", '"Cormorant Garamond", serif', text, null);
     }
 
     if (C.location) {
-      arFit(ctx, C.location, cx, locationY, W - 420, 26, 17, "300", '"Montserrat", sans-serif', muted, null);
+      arFit(ctx, C.location, cx, locationY, W - 420, 28, 19, "300", '"Montserrat", sans-serif', muted, null);
     }
 
     ctx.fillStyle = accent;
@@ -370,14 +368,12 @@
     ctx.globalAlpha = 1;
 
     if (C.invitee) {
-      arText(ctx, C.invitee, cx, dividerY + 38, "italic 500", 42, '"Cormorant Garamond", serif', accent, accent);
+      arText(ctx, C.invitee, cx, dividerY + 38, "italic 500", 45, '"Cormorant Garamond", serif', accent, accent);
     }
 
     var gLabel = C.guests === 1 ? "\u0636\u064a\u0641 \u0648\u0627\u062d\u062f \u0645\u0633\u0645\u0648\u062d \u0628\u0647" : (C.guests + " \u0636\u064a\u0648\u0641 \u0645\u0633\u0645\u0648\u062d \u0628\u0647\u0645");
-    var guestsY = dividerY + 86;
-    if (C.guests && guestsY < 1520) {
-      arText(ctx, gLabel, cx, guestsY, "500", 34, arFace, muted, null);
-    }
+    var guestsY = Math.min(dividerY + 96, 1440);
+    arText(ctx, gLabel, cx, guestsY, "500", 40, arFace, muted, null);
   }
   function paint(data, bg, opts) {
     var W = 1200;
